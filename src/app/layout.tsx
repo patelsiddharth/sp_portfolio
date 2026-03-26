@@ -7,8 +7,13 @@ import CustomCursor from "@/components/CustomCursor";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Creative Developer | Portfolio",
-  description: "Scrollytelling Personal Portfolio",
+  title: "Siddharth Patel | Portfolio",
+  description: "Creative Developer & Designer — Scrollytelling Personal Portfolio by Siddharth Patel.",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
