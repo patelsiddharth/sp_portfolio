@@ -46,7 +46,7 @@ const ProjectsSection = () => (
           Selected <span className="gradient-text-accent">work</span>
         </h2>
         <p className="section-subtitle mb-12">
-          Products I've built that serve real users at scale.
+          Products I&apos;ve built that serve real users at scale.
         </p>
       </RevealOnScroll>
 

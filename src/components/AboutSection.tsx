@@ -31,8 +31,8 @@ const AboutSection = () => (
           <span className="gradient-text">one pixel at a time</span>
         </h2>
         <p className="section-subtitle mb-12">
-          I'm a Senior Front-End Engineer passionate about creating performant,
-          scalable applications that delight users.
+          I&apos;m a Senior Front-End Engineer passionate about creating
+          performant, scalable applications that delight users.
         </p>
       </RevealOnScroll>
 
@@ -58,9 +58,9 @@ const AboutSection = () => (
                 <p>
                   At <span className="text-foreground">Dassault Systèmes</span>{" "}
                   and <span className="text-foreground">Vimo Inc.</span>, my
-                  work serves 30,000+ active users daily. I've achieved 95% test
-                  coverage, unified 12+ monorepos with Nx, and mentored the next
-                  generation of engineers.
+                  work serves 30,000+ active users daily. I&apos;ve achieved 95%
+                  test coverage, unified 12+ monorepos with Nx, and mentored the
+                  next generation of engineers.
                 </p>
                 <p>
                   Beyond code, I care deeply about{" "}

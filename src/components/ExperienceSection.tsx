@@ -60,7 +60,7 @@ const ExperienceSection = () => (
       <RevealOnScroll>
         <div className="section-label">Experience</div>
         <h2 className="section-title">
-          Where I've <span className="gradient-text">made impact</span>
+          Where I&apos;ve <span className="gradient-text">made impact</span>
         </h2>
         <p className="section-subtitle mb-12">
           A journey through product companies building tools used by thousands.

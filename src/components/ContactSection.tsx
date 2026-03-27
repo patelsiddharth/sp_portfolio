@@ -70,7 +70,7 @@ const ContactSection = () => {
         <RevealOnScroll>
           <div className="section-label">Contact</div>
           <h2 className="section-title">
-            Let's <span className="gradient-text">connect</span>
+            Let&apos;s <span className="gradient-text">connect</span>
           </h2>
           <p className="section-subtitle mb-12">
             Open to exciting roles, freelance projects, or a good conversation
@@ -108,7 +108,7 @@ const ContactSection = () => {
                   Message Sent!
                 </h3>
                 <p className="font-body text-sm text-muted-foreground">
-                  I'll get back to you within 24 hours.
+                  I&apos;ll get back to you within 24 hours.
                 </p>
               </div>
             ) : (

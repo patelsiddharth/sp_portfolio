@@ -24,7 +24,6 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
 
       const fixedLogoEl = document.getElementById("fixed-logo-text");
 
-      let tx = -420;
       let ty = -350;
       let targetScale = 0.28;
 
@@ -33,27 +32,15 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
 
       if (fixedLogoEl) {
         const rect = fixedLogoEl.getBoundingClientRect();
-        const targetCenterX = rect.left + rect.width / 2;
         const targetCenterY = rect.top + rect.height / 2;
-
-        const startX = ww / 2;
         const startY = wh / 2;
-
-        tx = targetCenterX - startX;
         ty = targetCenterY - startY;
       } else {
-        const maxW = 1280;
-        const boxLeft = Math.max(0, (ww - maxW) / 2);
-        const logoLeft = boxLeft + 24;
-        const approximateWidth = ww >= 768 ? 190 : 160;
-        const targetCenterX = logoLeft + approximateWidth / 2;
         const targetCenterY = 36;
-
-        tx = targetCenterX - ww / 2;
         ty = targetCenterY - wh / 2;
       }
 
-      // x is intentionally zeroed — fly animation is vertical-only
+      // fly animation is vertical-only
       setTargetMetrics({ x: 0, y: ty, scale: targetScale });
     };
 
@@ -260,6 +247,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
 
         {/* Section 2: Slides in from left edge, holds, exits left */}
         <motion.div
+          initial={false}
           style={{ opacity: opacity2, x: x2 }}
           className="absolute inset-0 flex items-center justify-start text-left z-20 pointer-events-none"
         >
@@ -278,6 +266,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
 
         {/* Section 3: Final Fixed Logic (Right Side Slide) */}
         <motion.div
+          initial={false}
           style={{ opacity: opacity3, x: x3 }}
           className="absolute inset-0 flex items-center justify-end z-20 pointer-events-none ml-5"
         >
