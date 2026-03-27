@@ -71,8 +71,8 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
   const opacity1 = useTransform(scrollYProgress, [0, 0.03, 0.08], [1, 1, 0], {
     clamp: true,
   });
-  const y1Sub = useTransform(scrollYProgress, [0, 0.08], [0, -60], {
-    clamp: true,
+  const y1Sub = useTransform(scrollYProgress, [0, 0.08], [0, 60], {
+    clamp: false,
   });
   const scrollOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0], {
     clamp: true,
@@ -115,21 +115,12 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
   );
 
   // --- Section 2 ---
-  // Deliberately wide ranges so the card is visible across a large scroll window.
-  // DEBUG: open console and watch [S2] lines to see real progress values.
-  //
-  // Timeline:
-  //   0.15 → 0.30  enter (slides in from left)
-  //   0.30 → 0.60  hold  (fully visible — 30% of total scroll)
-  //   0.60 → 0.75  exit  (slides out to left)
-
   const x2 = useTransform(scrollYProgress, (p) => {
     const offscreen = -(window.innerWidth + 50);
 
     if (p < 0.15) return offscreen;
 
     if (p < 0.3) {
-      // linear enter (0 → 1)
       const t = (p - 0.15) / 0.15;
       return offscreen * (1 - t);
     }
@@ -137,7 +128,6 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
     if (p < 0.6) return 0;
 
     if (p < 0.75) {
-      // linear exit (0 → 1)
       const t = (p - 0.6) / 0.15;
       return offscreen * t;
     }
@@ -147,31 +137,34 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
 
   const opacity2 = useTransform(
     scrollYProgress,
-    [0.15, 0.25, 0.65, 0.75],
+    [0.05, 0.15, 0.95, 1],
     [0, 1, 1, 0],
   );
 
-  // DEBUG — remove once confirmed working
-  useEffect(() => {
-    const unsub = scrollYProgress.on("change", (p) => {
-      if (p > 0.1 && p < 0.8) {
-        console.log(
-          `[S2] progress=${p.toFixed(3)}  x2=${x2.get().toFixed(0)}  opacity2=${opacity2.get().toFixed(2)}`,
-        );
-      }
-    });
-    return unsub;
-  }, [scrollYProgress, x2, opacity2]);
+  // --- Section 3 ---
+  const x3 = useTransform(scrollYProgress, (p) => {
+    const offscreen = window.innerWidth;
 
-  // --- Section 3 (unchanged) ---
-  const x3 = useTransform(
-    scrollYProgress,
-    [0.75, 0.85, 0.92, 0.98],
-    [0, 0, 0, 0],
-  );
+    if (p < 0.55) return offscreen;
+
+    if (p < 0.65) {
+      const t = (p - 0.55) / 0.1;
+      return offscreen * (1 - t);
+    }
+
+    if (p < 0.88) return 0;
+
+    if (p < 0.98) {
+      const t = (p - 0.88) / 0.1;
+      return offscreen * t;
+    }
+
+    return offscreen;
+  });
+
   const opacity3 = useTransform(
     scrollYProgress,
-    [0.75, 0.83, 0.94, 0.98],
+    [0.15, 0.35, 0.65, 0.98],
     [0, 1, 1, 0],
   );
 
@@ -197,7 +190,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
         )}
 
       {/* OVERLAY CONTENT */}
-      <div className="w-full h-full max-w-7xl mx-auto px-6 relative pointer-events-none">
+      <div className="w-full h-full max-w-7xl mx-auto relative pointer-events-none">
         {/* ── ELEMENT A: Flying name (centered, moves vertically to navbar) ── */}
         <motion.div
           style={{
@@ -266,7 +259,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
         {/* Section 2: Slides in from left edge, holds, exits left */}
         <motion.div
           style={{ opacity: opacity2, x: x2 }}
-          className="absolute inset-0 flex items-center justify-start text-left px-6 lg:px-12 z-20 pointer-events-none"
+          className="absolute inset-0 flex items-center justify-start text-left z-20 pointer-events-none"
         >
           <div className="max-w-sm glass-card p-5 glow-primary">
             <h2 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-4">
@@ -281,17 +274,17 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
           </div>
         </motion.div>
 
-        {/* Section 3: Slides in from left edge, holds, exits left */}
+        {/* Section 3: Final Fixed Logic (Right Side Slide) */}
         <motion.div
           style={{ opacity: opacity3, x: x3 }}
-          className="absolute inset-0 flex items-center justify-start text-left px-6 lg:px-12 z-30 pointer-events-none"
+          className="absolute inset-0 flex items-center justify-end z-20 pointer-events-none ml-5"
         >
-          <div className="max-w-sm glass-card p-5 glow-secondary">
+          <div className="max-w-sm glass-card p-4 glow-primary">
             <h2 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-4">
               Bridging design{" "}
               <span className="gradient-text-accent">&amp; engineering.</span>
             </h2>
-            <div className="w-12 h-1 rounded-full mb-4 bg-gradient-to-r from-secondary to-accent" />
+            <div className="w-12 h-1 rounded-full mb-4 bg-gradient-to-r from-primary to-accent" />
             <p className="text-sm md:text-base text-gray-300 leading-relaxed font-light">
               Turning complex problems into elegant, minimalist, and deeply
               interactive web solutions.
