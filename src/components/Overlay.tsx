@@ -116,6 +116,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
 
   // --- Section 2 ---
   const x2 = useTransform(scrollYProgress, (p) => {
+    if (typeof window === "undefined") return 0;
     const offscreen = -(window.innerWidth + 50);
 
     if (p < 0.15) return offscreen;
@@ -143,6 +144,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
 
   // --- Section 3 ---
   const x3 = useTransform(scrollYProgress, (p) => {
+    if (typeof window === "undefined") return 0;
     const offscreen = window.innerWidth;
 
     if (p < 0.55) return offscreen;
