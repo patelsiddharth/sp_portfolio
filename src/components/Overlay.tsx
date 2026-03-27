@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, MotionValue, useTransform } from "framer-motion";
 
@@ -10,7 +10,11 @@ interface OverlayProps {
 
 export default function Overlay({ scrollYProgress }: OverlayProps) {
   const [mounted, setMounted] = useState(false);
-  const [targetMetrics, setTargetMetrics] = useState({ x: -420, y: -350, scale: 0.28 });
+  const [targetMetrics, setTargetMetrics] = useState({
+    x: -420,
+    y: -350,
+    scale: 0.28,
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -18,16 +22,14 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
       const ww = window.innerWidth;
       const wh = window.innerHeight;
 
-      // Look for the portal element instead because the real Navbar is rendered
-      // below ScrollyCanvas and currently sitting 500vh down the page.
       const fixedLogoEl = document.getElementById("fixed-logo-text");
 
       let tx = -420;
       let ty = -350;
       let targetScale = 0.28;
 
-      const startFontSize = ww >= 768 ? 96 : 60; // 96px on md+, 60px on mobile
-      targetScale = 24 / startFontSize; // 24px is text-2xl in the navbar
+      const startFontSize = ww >= 768 ? 96 : 60;
+      targetScale = 24 / startFontSize;
 
       if (fixedLogoEl) {
         const rect = fixedLogoEl.getBoundingClientRect();
@@ -47,11 +49,12 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
         const targetCenterX = logoLeft + approximateWidth / 2;
         const targetCenterY = 36;
 
-        tx = targetCenterX - (ww / 2);
-        ty = targetCenterY - (wh / 2);
+        tx = targetCenterX - ww / 2;
+        ty = targetCenterY - wh / 2;
       }
 
-      setTargetMetrics({ x: tx, y: ty, scale: targetScale });
+      // x is intentionally zeroed — fly animation is vertical-only
+      setTargetMetrics({ x: 0, y: ty, scale: targetScale });
     };
 
     updateMetrics();
@@ -65,17 +68,28 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
   }, []);
 
   // --- Section 1 ---
-  const opacity1 = useTransform(scrollYProgress, [0, 0.12, 0.18], [1, 1, 0]);
-  const y1Sub = useTransform(scrollYProgress, [0, 0.18], [0, -120]);
-  const scrollOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
+  const opacity1 = useTransform(scrollYProgress, [0, 0.03, 0.08], [1, 1, 0], {
+    clamp: true,
+  });
+  const y1Sub = useTransform(scrollYProgress, [0, 0.08], [0, -60], {
+    clamp: true,
+  });
+  const scrollOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0], {
+    clamp: true,
+  });
+  const pointerEvents1 = useTransform(
+    scrollYProgress,
+    [0, 0.08],
+    ["auto" as const, "none" as const],
+  );
 
   const metricsRef = useRef(targetMetrics);
   useEffect(() => {
     metricsRef.current = targetMetrics;
   }, [targetMetrics]);
 
-  // ── ELEMENT A: Flying name ──
-  const flyOpacity = useTransform(scrollYProgress, [0, 0.16, 0.18], [1, 1, 0]);
+  // ── ELEMENT A: Flying name (vertical-only, shrinks toward navbar) ──
+  const flyOpacity = useTransform(scrollYProgress, [0, 0.18, 0.2], [1, 1, 0]);
 
   const getProgress = (p: number) => {
     if (p <= 0) return 0;
@@ -84,53 +98,111 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
     return Math.sin((progress * Math.PI) / 2);
   };
 
-  const flyY = useTransform(scrollYProgress, (p) => getProgress(p) * metricsRef.current.y);
-  const flyX = useTransform(scrollYProgress, (p) => getProgress(p) * metricsRef.current.x);
+  const flyY = useTransform(
+    scrollYProgress,
+    (p) => getProgress(p) * metricsRef.current.y,
+  );
   const flyScale = useTransform(scrollYProgress, (p) => {
     const prog = getProgress(p);
     return 1 - prog * (1 - metricsRef.current.scale);
   });
 
   // ── ELEMENT B: Navbar-docked name ──
-  const dockOpacity = useTransform(scrollYProgress, [0.17, 0.19, 0.96, 1.0], [0, 1, 1, 0]);
+  const dockOpacity = useTransform(
+    scrollYProgress,
+    [0.18, 0.2, 0.96, 1.0],
+    [0, 1, 1, 0],
+  );
 
-  // --- Sections 2 & 3 ---
-  // Section 2: 25% to 50%
-  const opacity2 = useTransform(scrollYProgress, [0.22, 0.3, 0.45, 0.55], [0, 1, 1, 0]);
+  // --- Section 2 ---
+  // Deliberately wide ranges so the card is visible across a large scroll window.
+  // DEBUG: open console and watch [S2] lines to see real progress values.
+  //
+  // Timeline:
+  //   0.15 → 0.30  enter (slides in from left)
+  //   0.30 → 0.60  hold  (fully visible — 30% of total scroll)
+  //   0.60 → 0.75  exit  (slides out to left)
 
-  // Section 3: 65% to 90%
-  const opacity3 = useTransform(scrollYProgress, [0.6, 0.68, 0.85, 0.95], [0, 1, 1, 0]);
+  const x2 = useTransform(scrollYProgress, (p) => {
+    const offscreen = -(window.innerWidth + 50);
 
+    if (p < 0.15) return offscreen;
+
+    if (p < 0.3) {
+      // linear enter (0 → 1)
+      const t = (p - 0.15) / 0.15;
+      return offscreen * (1 - t);
+    }
+
+    if (p < 0.6) return 0;
+
+    if (p < 0.75) {
+      // linear exit (0 → 1)
+      const t = (p - 0.6) / 0.15;
+      return offscreen * t;
+    }
+
+    return offscreen;
+  });
+
+  const opacity2 = useTransform(
+    scrollYProgress,
+    [0.15, 0.25, 0.65, 0.75],
+    [0, 1, 1, 0],
+  );
+
+  // DEBUG — remove once confirmed working
+  useEffect(() => {
+    const unsub = scrollYProgress.on("change", (p) => {
+      if (p > 0.1 && p < 0.8) {
+        console.log(
+          `[S2] progress=${p.toFixed(3)}  x2=${x2.get().toFixed(0)}  opacity2=${opacity2.get().toFixed(2)}`,
+        );
+      }
+    });
+    return unsub;
+  }, [scrollYProgress, x2, opacity2]);
+
+  // --- Section 3 (unchanged) ---
+  const x3 = useTransform(
+    scrollYProgress,
+    [0.75, 0.85, 0.92, 0.98],
+    [0, 0, 0, 0],
+  );
+  const opacity3 = useTransform(
+    scrollYProgress,
+    [0.75, 0.83, 0.94, 0.98],
+    [0, 1, 1, 0],
+  );
 
   return (
     <>
       {/* ── ELEMENT B: Docked name at Navbar logo position (portal) ── */}
-      {mounted && createPortal(
-        <motion.div
-          style={{ opacity: dockOpacity }}
-          className="fixed top-0 left-0 w-full z-[9999] pointer-events-none"
-        >
-          {/* Mirror the layout of Navbar precisely */}
-          <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-            <div className="font-display text-2xl font-bold tracking-tighter min-w-[200px]">
-              <span id="fixed-logo-text" className="inline-block">
-                <span className="text-white">Siddharth </span>
-                <span className="gradient-text">Patel.</span>
-              </span>
+      {mounted &&
+        createPortal(
+          <motion.div
+            style={{ opacity: dockOpacity }}
+            className="fixed top-0 left-0 w-full z-[9999] pointer-events-none"
+          >
+            <div className="max-w-7xl mx-auto flex justify-center items-center px-6 py-4">
+              <div className="font-display text-2xl font-bold tracking-tighter">
+                <span id="fixed-logo-text" className="inline-block">
+                  <span className="text-white">Siddharth </span>
+                  <span className="gradient-text">Patel.</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </motion.div>,
-        document.body
-      )}
+          </motion.div>,
+          document.body,
+        )}
 
       {/* OVERLAY CONTENT */}
       <div className="w-full h-full max-w-7xl mx-auto px-6 relative pointer-events-none">
-
-        {/* ── ELEMENT A: Flying name (centered, moves to top-left) ── */}
+        {/* ── ELEMENT A: Flying name (centered, moves vertically to navbar) ── */}
         <motion.div
           style={{
             y: flyY,
-            x: flyX,
+            x: 0,
             scale: flyScale,
             opacity: flyOpacity,
             transformOrigin: "center center",
@@ -140,6 +212,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
             alignItems: "center",
             justifyContent: "center",
             margin: 0,
+            zIndex: 50,
           }}
           className="text-6xl md:text-8xl font-bold tracking-tighter drop-shadow-2xl font-display"
         >
@@ -149,44 +222,83 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
           </span>
         </motion.div>
 
-        {/* Section 1: Subtitle */}
+        {/* Section 1: Tagline + scroll indicator */}
         <motion.div
-          style={{ opacity: opacity1 }}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center"
+          style={{
+            opacity: opacity1,
+            pointerEvents: pointerEvents1,
+          }}
+          className="absolute inset-0 flex flex-col items-center justify-center text-center z-10"
         >
-          <div className="text-6xl md:text-8xl font-bold opacity-0 tracking-tighter select-none" aria-hidden>
+          <div
+            className="text-6xl md:text-8xl font-bold opacity-0 tracking-tighter select-none"
+            aria-hidden
+          >
             Siddharth Patel.
           </div>
-          <motion.p style={{ y: y1Sub }} className="mt-6 text-2xl md:text-3xl text-gray-300 font-light tracking-widest uppercase">
+          <motion.p
+            style={{ y: y1Sub }}
+            className="mt-6 text-2xl md:text-3xl text-gray-300 font-light tracking-widest uppercase"
+          >
             Frontend Developer
           </motion.p>
-          <motion.div style={{ opacity: scrollOpacity }} className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-            <span className="text-sm tracking-widest text-gray-400 uppercase font-medium">Scroll</span>
-            <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }} className="w-5 h-8 border-2 border-gray-400 rounded-full flex justify-center p-1">
+          <motion.div
+            style={{ opacity: scrollOpacity }}
+            className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          >
+            <span className="text-sm tracking-widest text-gray-400 uppercase font-medium">
+              Scroll
+            </span>
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: "easeInOut",
+              }}
+              className="w-5 h-8 border-2 border-gray-400 rounded-full flex justify-center p-1"
+            >
               <motion.div className="w-1 h-2 bg-gray-400 rounded-full" />
             </motion.div>
           </motion.div>
         </motion.div>
 
-        {/* Section 2 */}
-        <motion.div style={{ opacity: opacity2 }} className="absolute inset-0 flex items-center justify-center text-center px-6">
-          <div className="max-w-2xl glass-card p-8 md:p-12 glow-primary">
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">I build digital <span className="gradient-text">experiences.</span></h2>
-            <div className="w-16 h-1 rounded-full mx-auto mb-6 bg-gradient-to-r from-primary to-accent" />
-            <p className="text-xl md:text-2xl text-gray-300 leading-relaxed font-light">Crafting fluid animations and pixel-perfect interfaces that blur the line between design and engineering.</p>
+        {/* Section 2: Slides in from left edge, holds, exits left */}
+        <motion.div
+          style={{ opacity: opacity2, x: x2 }}
+          className="absolute inset-0 flex items-center justify-start text-left px-6 lg:px-12 z-20 pointer-events-none"
+        >
+          <div className="max-w-sm glass-card p-5 glow-primary">
+            <h2 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-4">
+              I build digital{" "}
+              <span className="gradient-text">experiences.</span>
+            </h2>
+            <div className="w-12 h-1 rounded-full mb-4 bg-gradient-to-r from-primary to-accent" />
+            <p className="text-sm md:text-base text-gray-300 leading-relaxed font-light">
+              Crafting fluid animations and pixel-perfect interfaces that blur
+              the line between design and engineering.
+            </p>
           </div>
         </motion.div>
 
-        {/* Section 3 */}
-        <motion.div style={{ opacity: opacity3 }} className="absolute inset-0 flex items-center justify-end text-right px-6">
-          <div className="max-w-2xl glass-card p-8 md:p-12 glow-secondary">
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">Bridging design <span className="gradient-text-accent">&amp; engineering.</span></h2>
-            <div className="w-16 h-1 rounded-full ml-auto mb-6 bg-gradient-to-l from-secondary to-accent" />
-            <p className="text-xl md:text-2xl text-gray-300 leading-relaxed font-light">Turning complex problems into elegant, minimalist, and deeply interactive web solutions.</p>
+        {/* Section 3: Slides in from left edge, holds, exits left */}
+        <motion.div
+          style={{ opacity: opacity3, x: x3 }}
+          className="absolute inset-0 flex items-center justify-start text-left px-6 lg:px-12 z-30 pointer-events-none"
+        >
+          <div className="max-w-sm glass-card p-5 glow-secondary">
+            <h2 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-4">
+              Bridging design{" "}
+              <span className="gradient-text-accent">&amp; engineering.</span>
+            </h2>
+            <div className="w-12 h-1 rounded-full mb-4 bg-gradient-to-r from-secondary to-accent" />
+            <p className="text-sm md:text-base text-gray-300 leading-relaxed font-light">
+              Turning complex problems into elegant, minimalist, and deeply
+              interactive web solutions.
+            </p>
           </div>
         </motion.div>
       </div>
     </>
   );
 }
-
