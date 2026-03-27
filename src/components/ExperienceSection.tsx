@@ -47,10 +47,16 @@ const jobs = [
 ];
 
 const ExperienceSection = () => (
-  <section id="experience" className="py-16 md:py-20 px-6 relative">
-    <div className="absolute top-1/2 left-0 w-[400px] h-[400px] -translate-y-1/2 pointer-events-none" style={{ background: "radial-gradient(circle, hsl(245 80% 67% / 0.08), transparent 70%)" }} />
+  <section id="experience" className="py-16 md:py-20 relative">
+    <div
+      className="absolute top-1/2 left-0 w-[400px] h-[400px] -translate-y-1/2 pointer-events-none"
+      style={{
+        background:
+          "radial-gradient(circle, hsl(245 80% 67% / 0.08), transparent 70%)",
+      }}
+    />
 
-    <div className="max-w-7xl mx-auto relative z-10">
+    <div className="max-w-7xl mx-auto px-6 relative z-10">
       <RevealOnScroll>
         <div className="section-label">Experience</div>
         <h2 className="section-title">
@@ -64,27 +70,48 @@ const ExperienceSection = () => (
       <div className="space-y-5">
         {jobs.map((job, i) => (
           <RevealOnScroll key={i} delay={i * 0.1}>
-            <SpotlightCard className="h-full rounded-2xl" spotlightColor={job.color.replace(')', ' / 0.15)')}>
+            <SpotlightCard
+              className="h-full rounded-2xl"
+              spotlightColor={job.color.replace(")", " / 0.15)")}
+            >
               <div className="glass rounded-2xl p-8 transition-all hover:scale-[1.01] group bg-background/50 backdrop-blur-xl border border-white/5">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
                   <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: `${job.color}20`, color: job.color }}>
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ background: `${job.color}20`, color: job.color }}
+                    >
                       {job.icon}
                     </div>
                     <div>
-                      <h3 className="font-display text-xl font-bold mb-1">{job.role}</h3>
-                      <div className="font-body text-sm text-muted-foreground">{job.company}</div>
+                      <h3 className="font-display text-xl font-bold mb-1">
+                        {job.role}
+                      </h3>
+                      <div className="font-body text-sm text-muted-foreground">
+                        {job.company}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ background: job.color }} />
-                    <span className="font-body text-xs text-muted-foreground whitespace-nowrap">{job.period}</span>
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{ background: job.color }}
+                    />
+                    <span className="font-body text-xs text-muted-foreground whitespace-nowrap">
+                      {job.period}
+                    </span>
                   </div>
                 </div>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {job.bullets.map((b, j) => (
-                    <li key={j} className="flex gap-3 text-sm font-body text-muted-foreground leading-relaxed">
-                      <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: job.color }} />
+                    <li
+                      key={j}
+                      className="flex gap-3 text-sm font-body text-muted-foreground leading-relaxed"
+                    >
+                      <span
+                        className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0"
+                        style={{ background: job.color }}
+                      />
                       {b}
                     </li>
                   ))}

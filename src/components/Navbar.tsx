@@ -40,7 +40,7 @@ const Navbar = () => {
   // Section highlighting
   useEffect(() => {
     const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) setActiveSection(`#${entry.target.id}`);
       });
     };
@@ -50,8 +50,8 @@ const Navbar = () => {
       threshold: 0,
     });
 
-    links.forEach(l => {
-      const el = document.querySelector(l.href);
+    [...links.map((l) => l.href), "#hero"].forEach((id) => {
+      const el = document.querySelector(id);
       if (el) observer.observe(el);
     });
 
@@ -62,10 +62,13 @@ const Navbar = () => {
     <>
       <header
         id="main-navbar"
-        className="sticky top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-lg border-b border-white/10 shadow-lg"
+        className="sticky top-0 left-0 right-0 z-[110] bg-background/90 backdrop-blur-lg border-b border-white/10 shadow-lg"
       >
         <nav className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-          <a href="#hero" className="font-display text-2xl font-bold tracking-tighter min-w-[200px]">
+          <a
+            href="#hero"
+            className="font-display text-2xl font-bold tracking-tighter min-w-[200px]"
+          >
             <AnimatePresence mode="wait">
               {showName ? (
                 <motion.span
@@ -80,7 +83,12 @@ const Navbar = () => {
                   <span className="gradient-text">Patel.</span>
                 </motion.span>
               ) : (
-                <span id="navbar-logo-text-off" key="name-off" className="inline-block opacity-0 select-none" aria-hidden>
+                <span
+                  id="navbar-logo-text-off"
+                  key="name-off"
+                  className="inline-block opacity-0 select-none"
+                  aria-hidden
+                >
                   Siddharth Patel.
                 </span>
               )}
@@ -88,14 +96,15 @@ const Navbar = () => {
           </a>
 
           <ul className="hidden md:flex gap-2">
-            {links.map(l => (
+            {links.map((l) => (
               <li key={l.href} className="relative px-4 py-2">
                 <a
                   href={l.href}
-                  className={`relative z-10 font-body text-sm transition-colors duration-300 ${activeSection === l.href
-                    ? "text-white font-medium"
-                    : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={`relative z-10 font-body text-sm transition-colors duration-300 ${
+                    activeSection === l.href
+                      ? "text-white font-medium"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   {l.label}
                 </a>
@@ -123,18 +132,30 @@ const Navbar = () => {
             onClick={() => setOpen(!open)}
             aria-label="Toggle navigation"
           >
-            <span className={`block absolute h-0.5 w-full bg-foreground rounded transition-all duration-300 ${open ? "top-[9px] rotate-45" : "top-0"}`} />
-            <span className={`block absolute h-0.5 w-full bg-foreground rounded transition-all duration-300 top-[9px] ${open ? "opacity-0" : ""}`} />
-            <span className={`block absolute h-0.5 w-full bg-foreground rounded transition-all duration-300 ${open ? "top-[9px] -rotate-45" : "top-[18px]"}`} />
+            <span
+              className={`block absolute h-0.5 w-full bg-foreground rounded transition-all duration-300 ${open ? "top-[9px] rotate-45" : "top-0"}`}
+            />
+            <span
+              className={`block absolute h-0.5 w-full bg-foreground rounded transition-all duration-300 top-[9px] ${open ? "opacity-0" : ""}`}
+            />
+            <span
+              className={`block absolute h-0.5 w-full bg-foreground rounded transition-all duration-300 ${open ? "top-[9px] -rotate-45" : "top-[18px]"}`}
+            />
           </button>
         </nav>
       </header>
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 z-[101] flex items-center justify-center transition-all duration-500 ease-out ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
-        style={{ background: "hsl(230 25% 7% / 0.98)", backdropFilter: "blur(20px)" }}
+        className={`fixed inset-0 z-[101] flex items-center justify-center transition-all duration-500 ease-out ${
+          open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+        style={{
+          background: "hsl(230 25% 7% / 0.98)",
+          backdropFilter: "blur(20px)",
+        }}
       >
         <ul className="flex flex-col gap-8 text-center w-full px-6">
           {links.map((l, i) => (
