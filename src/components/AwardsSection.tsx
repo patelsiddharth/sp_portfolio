@@ -1,5 +1,6 @@
 import { Award, Medal, Star, Handshake } from "lucide-react";
 import RevealOnScroll from "./RevealOnScroll";
+import AnimatedAwardCard from "./AnimatedAwardCard";
 
 const awards = [
   {
@@ -45,21 +46,7 @@ const AwardsSection = () => (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
         {awards.map((a, i) => (
           <RevealOnScroll key={i} delay={i * 0.08}>
-            <div className="glass rounded-2xl p-6 transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_-10px_hsl(330_75%_60%_/_0.2)] h-full flex flex-col">
-              <div className="mb-4">{a.icon}</div>
-              <div className="font-body text-xs text-primary mb-2">
-                {a.year}
-              </div>
-              <h3 className="font-display text-base font-bold mb-1">
-                {a.name}
-              </h3>
-              <div className="font-body text-xs text-muted-foreground mb-2">
-                {a.org}
-              </div>
-              <p className="font-body text-xs text-muted-foreground leading-relaxed mt-auto">
-                {a.desc}
-              </p>
-            </div>
+            <AnimatedAwardCard award={a} index={i} />
           </RevealOnScroll>
         ))}
       </div>

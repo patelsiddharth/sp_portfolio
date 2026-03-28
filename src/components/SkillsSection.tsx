@@ -1,6 +1,7 @@
 import { Monitor, Database, FlaskConical, Wrench } from "lucide-react";
 import RevealOnScroll from "./RevealOnScroll";
 import SpotlightCard from "./SpotlightCard";
+import AnimatedSkillTag from "./AnimatedSkillTag";
 
 const skills = [
   {
@@ -49,7 +50,7 @@ const skills = [
 ];
 
 const SkillsSection = () => (
-  <section id="skills" className="py-16 md:py-20 relative">
+  <section id="skills" className="py-16 md:py-20 relative overflow-hidden">
     <div
       className="absolute top-1/3 right-0 w-[400px] h-[400px] pointer-events-none"
       style={{
@@ -79,7 +80,7 @@ const SkillsSection = () => (
               <div className="glass rounded-2xl p-7 h-full bg-background/50 backdrop-blur-xl border border-white/5">
                 <div className="flex items-center gap-3 mb-5">
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center animate-pulse-glow"
                     style={{ background: cat.gradient, color: "white" }}
                   >
                     {cat.icon}
@@ -89,14 +90,8 @@ const SkillsSection = () => (
                   </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {cat.items.map((item) => (
-                    <span
-                      key={item}
-                      className="px-4 py-2 rounded-full text-xs font-body text-foreground border border-border/50 hover:border-primary/40 transition-all hover:scale-105 cursor-default"
-                      style={{ background: "hsl(230 20% 12% / 0.5)" }}
-                    >
-                      {item}
-                    </span>
+                  {cat.items.map((item, idx) => (
+                    <AnimatedSkillTag key={item} label={item} delay={idx * 0.05} />
                   ))}
                 </div>
               </div>
@@ -105,6 +100,20 @@ const SkillsSection = () => (
         ))}
       </div>
     </div>
+
+    <style jsx>{`
+      @keyframes pulse-glow {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(100, 100, 255, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(100, 100, 255, 0.6);
+        }
+      }
+      :global(.animate-pulse-glow) {
+        animation: pulse-glow 2s ease-in-out infinite;
+      }
+    `}</style>
   </section>
 );
 
