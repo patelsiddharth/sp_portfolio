@@ -101,60 +101,72 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
     [0, 1, 1, 0],
   );
 
-  // --- Section 2 ---
+  // --- Section 2: Slide in from left, stay, slide out to left ---
   const x2 = useTransform(scrollYProgress, (p) => {
     if (typeof window === "undefined") return 0;
-    const offscreen = -(window.innerWidth + 50);
+    const offscreen = -(window.innerWidth + 100);
 
+    // Before 0.15: off-screen to the left
     if (p < 0.15) return offscreen;
 
+    // 0.15 to 0.3: slide in from left
     if (p < 0.3) {
       const t = (p - 0.15) / 0.15;
-      return offscreen * (1 - t);
+      return offscreen + (0 - offscreen) * t;
     }
 
+    // 0.3 to 0.6: stay on screen
     if (p < 0.6) return 0;
 
+    // 0.6 to 0.75: slide out to left
     if (p < 0.75) {
       const t = (p - 0.6) / 0.15;
-      return offscreen * t;
+      return 0 + (offscreen - 0) * t;
     }
 
+    // After 0.75: off-screen to the left
     return offscreen;
   });
 
   const opacity2 = useTransform(
     scrollYProgress,
-    [0.05, 0.15, 0.95, 1],
+    [0.12, 0.15, 0.75, 0.78],
     [0, 1, 1, 0],
+    { clamp: true }
   );
 
-  // --- Section 3 ---
+  // --- Section 3: Slide in from right, stay, slide out to right ---
   const x3 = useTransform(scrollYProgress, (p) => {
     if (typeof window === "undefined") return 0;
-    const offscreen = window.innerWidth;
+    const offscreen = window.innerWidth + 100;
 
+    // Before 0.55: off-screen to the right
     if (p < 0.55) return offscreen;
 
-    if (p < 0.65) {
-      const t = (p - 0.55) / 0.1;
-      return offscreen * (1 - t);
+    // 0.55 to 0.7: slide in from right
+    if (p < 0.7) {
+      const t = (p - 0.55) / 0.15;
+      return offscreen + (0 - offscreen) * t;
     }
 
-    if (p < 0.88) return 0;
+    // 0.7 to 0.95: stay on screen
+    if (p < 0.95) return 0;
 
-    if (p < 0.98) {
-      const t = (p - 0.88) / 0.1;
-      return offscreen * t;
+    // 0.95 to 1.0: slide out to right
+    if (p < 1.0) {
+      const t = (p - 0.95) / 0.05;
+      return 0 + (offscreen - 0) * t;
     }
 
+    // After 1.0: off-screen to the right
     return offscreen;
   });
 
   const opacity3 = useTransform(
     scrollYProgress,
-    [0.15, 0.35, 0.65, 0.98],
+    [0.52, 0.55, 1.0, 1.0],
     [0, 1, 1, 0],
+    { clamp: true }
   );
 
   return (
@@ -249,7 +261,7 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
         <motion.div
           initial={false}
           style={{ opacity: opacity2, x: x2 }}
-          className="absolute inset-0 flex items-center justify-start text-left z-20 pointer-events-none"
+          className="absolute inset-0 flex items-center justify-start text-left z-20 pointer-events-none pl-8 md:pl-12"
         >
           <div className="max-w-sm glass-card p-5 glow-primary">
             <h2 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-4">
@@ -264,11 +276,11 @@ export default function Overlay({ scrollYProgress }: OverlayProps) {
           </div>
         </motion.div>
 
-        {/* Section 3: Final Fixed Logic (Right Side Slide) */}
+        {/* Section 3: Slides in from right edge, holds, exits right */}
         <motion.div
           initial={false}
           style={{ opacity: opacity3, x: x3 }}
-          className="absolute inset-0 flex items-center justify-end z-20 pointer-events-none ml-5"
+          className="absolute inset-0 flex items-center justify-end text-left z-20 pointer-events-none pr-8 md:pr-12"
         >
           <div className="max-w-sm glass-card p-4 glow-primary">
             <h2 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-4">
