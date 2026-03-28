@@ -1,11 +1,10 @@
-import { ExternalLink } from "lucide-react";
 import RevealOnScroll from "./RevealOnScroll";
 import SpotlightCard from "./SpotlightCard";
 
 const projects = [
   {
     name: "ClearPath",
-    company: "Vimo Inc.",
+    company: "Vimo",
     desc: "Multi-tenant investigation management system for 50+ organizations — reduced case processing time by 40% and improved tracking accuracy for 10,000+ active cases.",
     tags: ["React.js", "TypeScript", "Redux RTK", "Chakra UI", "Vitest"],
     gradient: "var(--gradient-primary)",
@@ -64,10 +63,6 @@ const ProjectsSection = () => (
                     <span className="font-body text-xs text-muted-foreground">
                       {p.company}
                     </span>
-                    <ExternalLink
-                      size={14}
-                      className="text-muted-foreground transition-colors group-hover:text-primary"
-                    />
                   </div>
                   <h3 className="font-display text-xl font-bold mb-3">
                     {p.name}

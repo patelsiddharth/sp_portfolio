@@ -80,7 +80,7 @@ const Navbar = () => {
                   className="inline-block"
                 >
                   <span className="text-white">Siddharth </span>
-                  <span className="gradient-text">Patel.</span>
+                  <span className="gradient-text">Patel</span>
                 </motion.span>
               ) : (
                 <span

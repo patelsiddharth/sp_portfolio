@@ -8,9 +8,9 @@ const skills = [
     icon: <Monitor size={16} />,
     items: [
       "React",
-      "Vue.js",
+      "Vue",
       "TypeScript",
-      "JavaScript ES2023",
+      "JavaScript",
       "HTML5",
       "CSS3 / SCSS",
       "Chakra UI",
@@ -23,13 +23,13 @@ const skills = [
   {
     title: "State Management",
     icon: <Database size={16} />,
-    items: ["Redux Toolkit Query", "Vuex", "Pinia"],
+    items: ["Redux Toolkit Query",  "Context API", "Pinia", "Vuex"],
     gradient: "var(--gradient-accent)",
   },
   {
     title: "Testing",
     icon: <FlaskConical size={16} />,
-    items: ["Vitest", "Jasmine", "Karma", "Intern.js", "Leadfoot (E2E)"],
+    items: ["Vitest", "Jest", "Jasmine", "Karma", "Intern.js", "Leadfoot (E2E)"],
     gradient: "linear-gradient(135deg, hsl(170 70% 50%), hsl(245 80% 67%))",
   },
   {
@@ -41,8 +41,7 @@ const skills = [
       "Webpack",
       "Vue CLI",
       "Jenkins CI/CD",
-      "Git",
-      "SVN",
+      "Git / SVN",
       "SonarQube",
     ],
     gradient: "linear-gradient(135deg, hsl(245 80% 67%), hsl(170 70% 50%))",
