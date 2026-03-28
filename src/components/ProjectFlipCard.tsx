@@ -97,6 +97,7 @@ export default function ProjectFlipCard({
           transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
           style={{
             transformStyle: "preserve-3d",
+            userSelect: "none",
           }}
         >
           {/* Front */}

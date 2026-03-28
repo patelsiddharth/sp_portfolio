@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ExperienceSection from "@/components/ExperienceSection";
+// import ES1 from "@/components/ES1";
 import ProjectsSection from "@/components/ProjectsSection";
 import SkillsSection from "@/components/SkillsSection";
 import AwardsSection from "@/components/AwardsSection";
@@ -22,6 +23,7 @@ export default function Home() {
         <HeroSection />
         <AboutSection />
         <ExperienceSection />
+        {/* <ES1 /> */}
         <ProjectsSection />
         <SkillsSection />
         <AwardsSection />
