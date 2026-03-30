@@ -1,24 +1,50 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { Briefcase, Building2, Code, Calendar, ChevronRight } from "lucide-react";
+import { useRef, useState } from "react";
+import { motion, useInView, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { Briefcase, Building2, Code, Calendar, ChevronRight, MapPin, ChevronDown } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 
-const jobs = [
+interface Role {
+  title: string;
+  period: string;
+  duration: string;
+  location: string;
+  bullets: string[];
+}
+
+interface Job {
+  company: string;
+  type: string;
+  color: string;
+  colorRaw: string;
+  icon: React.ReactNode;
+  roles: Role[];
+  stats: { value: string; label: string }[];
+  tags: string[];
+}
+
+const jobs: Job[] = [
   {
-    period: "Jan 2025 – Present",
     company: "Vimo Inc.",
-    role: "Senior Software Engineer",
+    type: "Full-time · Remote",
     color: "hsl(245 80% 67%)",
     colorRaw: "245 80% 67%",
-    icon: <Code size={18} />,
-    bullets: [
-      "Built 5+ high-performance SPAs using React and Vue, serving 30,000+ active users with 99.9% uptime.",
-      "Integrated 15+ advanced features with Redux Toolkit Query, reducing code complexity by 30%.",
-      "Unified 12+ monorepos with Nx, cutting build times by 35% and halving feature release cycles.",
-      "Boosted front-end Lighthouse performance by 15% through React Hooks optimization.",
-      "Developed unit tests with Vitest, improving test coverage to 85%.",
+    icon: <Code size={20} />,
+    roles: [
+      {
+        title: "Senior Software Engineer",
+        period: "Jan 2025 - Present",
+        duration: "1 yr 3 mos",
+        location: "Pune, India",
+        bullets: [
+          "Built 5+ high-performance SPAs using React and Vue, serving 30,000+ active users with 99.9% uptime.",
+          "Integrated 15+ advanced features with Redux Toolkit Query, reducing code complexity by 30%.",
+          "Unified 12+ monorepos with Nx, cutting build times by 35% and halving feature release cycles.",
+          "Boosted front-end Lighthouse performance by 15% through React Hooks optimization.",
+          "Developed unit tests with Vitest, improving test coverage to 85%.",
+        ],
+      },
     ],
     stats: [
       { value: "30K+", label: "Active users" },
@@ -28,18 +54,34 @@ const jobs = [
     tags: ["React", "Vue", "TypeScript", "Redux RTK", "Nx", "Vitest"],
   },
   {
-    period: "Jul 2021 – Jan 2025",
     company: "Dassault Systèmes",
-    role: "Senior Software Engineer",
+    type: "Full-time · Hybrid",
     color: "hsl(330 75% 60%)",
     colorRaw: "330 75% 60%",
-    icon: <Building2 size={18} />,
-    bullets: [
-      "Managed a team of 4 across full SDLC — from requirement gathering to post-implementation support.",
-      "Developed 700+ unit tests with Jasmine & Karma, achieving 95% coverage, reducing production bugs by 40%.",
-      "Led Vue 2 → Vue 3 migration for 5+ applications — 25% performance gain, 20% bundle size reduction.",
-      "Automated 50+ E2E test cases and delivered 200+ page object methods using Intern JS & Leadfoot.",
-      "Leveraged SonarQube for code quality maintenance and security hotspot resolution.",
+    icon: <Building2 size={20} />,
+    roles: [
+      {
+        title: "Software Engineering Manager",
+        period: "May 2024 - Jan 2025",
+        duration: "9 mos",
+        location: "Pune, India",
+        bullets: [
+          "Managed a team of 4 across full SDLC — from requirement gathering to post-implementation support.",
+          "Drove code review standards and mentored engineers on best practices.",
+          "Leveraged SonarQube for code quality maintenance and security hotspot resolution.",
+        ],
+      },
+      {
+        title: "Software Engineering Specialist",
+        period: "Jul 2021 - Apr 2024",
+        duration: "2 yrs 10 mos",
+        location: "Pune, India",
+        bullets: [
+          "Developed 700+ unit tests with Jasmine & Karma, achieving 95% coverage, reducing production bugs by 40%.",
+          "Led Vue 2 → Vue 3 migration for 5+ applications — 25% performance gain, 20% bundle size reduction.",
+          "Automated 50+ E2E test cases and delivered 200+ page object methods using Intern JS & Leadfoot.",
+        ],
+      },
     ],
     stats: [
       { value: "95%", label: "Test coverage" },
@@ -49,17 +91,24 @@ const jobs = [
     tags: ["Vue 3", "TypeScript", "Jasmine", "Karma", "SonarQube", "Intern.js"],
   },
   {
-    period: "Jul 2019 – Jul 2021",
     company: "Persistent Systems",
-    role: "Software Engineer",
+    type: "Full-time · Hybrid",
     color: "hsl(170 70% 50%)",
     colorRaw: "170 70% 50%",
-    icon: <Briefcase size={18} />,
-    bullets: [
-      "Built and maintained frontend of a network management application for audio-video broadcasting.",
-      "Implemented customer-specific features and resolved performance bottlenecks.",
-      "Utilized C# and WPF for interface design in a Windows environment.",
-      "Collaborated closely with backend teams for seamless integration.",
+    icon: <Briefcase size={20} />,
+    roles: [
+      {
+        title: "Software Engineer",
+        period: "Jul 2019 - Jul 2021",
+        duration: "2 yrs 1 mo",
+        location: "Nagpur, India",
+        bullets: [
+          "Built and maintained frontend of a network management application for audio-video broadcasting.",
+          "Implemented customer-specific features and resolved performance bottlenecks.",
+          "Utilized C# and WPF for interface design in a Windows environment.",
+          "Collaborated closely with backend teams for seamless integration.",
+        ],
+      },
     ],
     stats: [
       { value: "2yr", label: "Duration" },
@@ -98,7 +147,7 @@ function StatCounter({ value, label, color }: { value: string; label: string; co
 }
 
 // Individual timeline card — alternates left/right
-function ExperienceCard({ job, index }: { job: (typeof jobs)[0]; index: number }) {
+function ExperienceCard({ job, index }: { job: Job; index: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const isEven = index % 2 === 0;
@@ -131,15 +180,6 @@ function ExperienceCard({ job, index }: { job: (typeof jobs)[0]; index: number }
         >
           {job.icon}
         </motion.div>
-        {/* <motion.div
-          className="flex items-center gap-1 mt-3 mb-1"
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.2 }}
-        >
-          <Calendar size={11} className="text-muted-foreground" />
-          <span className="font-body text-xs text-muted-foreground whitespace-nowrap">{job.period}</span>
-        </motion.div> */}
       </div>
 
       {/* Right column (desktop) */}
@@ -171,10 +211,6 @@ function ExperienceCard({ job, index }: { job: (typeof jobs)[0]; index: number }
           >
             {job.icon}
           </div>
-          <div>
-            <div className="font-display text-sm font-bold text-foreground">{job.role}</div>
-            <div className="font-body text-xs text-muted-foreground">{job.company} · {job.period}</div>
-          </div>
         </div>
         <CardContent job={job} inView={inView} isEven={isEven} />
       </motion.div>
@@ -182,17 +218,23 @@ function ExperienceCard({ job, index }: { job: (typeof jobs)[0]; index: number }
   );
 }
 
-function CardContent({ job, inView, flipped = false, isEven = false }: { job: (typeof jobs)[0]; inView: boolean; flipped?: boolean; isEven?: boolean }) {
+function CardContent({ job, inView, flipped = false, isEven = false }: { job: Job; inView: boolean; flipped?: boolean; isEven?: boolean }) {
+  const [expandedRole, setExpandedRole] = useState<number>(0);
+  
   return (
     <SpotlightCard className="w-full" spotlightColor={`hsl(${job.colorRaw} / 0.12)`}>
       <div
         className="glass rounded-2xl p-6 bg-background/50 backdrop-blur-xl border border-white/5 transition-all hover:border-white/10"
         style={ isEven ? { borderLeftColor: job.color, borderLeftWidth: "2px" } : { borderRightColor: job.color, borderRightWidth: "2px" } }
       >
-        {/* Header — hidden on mobile (handled above) */}
         <div className="hidden lg:block mb-4">
-          <div className="font-display text-lg font-bold text-foreground leading-tight">{job.role}</div>
-          <div className="font-body text-sm mt-0.5" style={{ color: job.color }}>{job.company}</div>
+          <div>
+            <h3 className="font-display text-base md:text-lg font-semibold text-foreground leading-tight"
+            style={{ color: job.color }}>
+              {job.company}
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1">{job.type}</p>
+          </div>
         </div>
 
         {/* Stats row */}
@@ -202,21 +244,97 @@ function CardContent({ job, inView, flipped = false, isEven = false }: { job: (t
           ))}
         </div>
 
-        {/* Bullets */}
-        <ul className="space-y-2 mb-5">
-          {job.bullets.map((b, i) => (
-            <motion.li
-              key={i}
-              className="flex gap-2 text-xs font-body text-muted-foreground leading-relaxed"
-              initial={{ opacity: 0, x: flipped ? 10 : -10 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: 0.15 + i * 0.06, duration: 0.35 }}
-            >
-              <ChevronRight size={12} className="flex-shrink-0 mt-0.5" style={{ color: job.color }} />
-              {b}
-            </motion.li>
-          ))}
-        </ul>
+        <div className="divide-y divide-white/5">
+          {job.roles.map((role, ri) => {
+            const isExpanded = expandedRole === ri;
+            return (
+              <div key={ri}>
+                <motion.button
+                  onClick={() =>
+                    setExpandedRole(isExpanded ? -1 : ri)
+                  }
+                  className="w-full text-left p-5 md:p-6 hover:bg-white/[0.03] transition-colors group/role cursor-pointer"
+                  whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.02)" }}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display text-sm md:text-base font-semibold text-foreground group-hover/role:text-white transition-colors">
+                        {role.title}
+                      </p>
+                      <div className="flex items-center gap-3 mt-2.5 flex-wrap">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Calendar size={12} className="opacity-60" />
+                          <span className="font-mono">{role.period}</span>
+                        </div>
+                        <span className="text-muted-foreground/20">·</span>
+                        <span className="text-xs text-muted-foreground">
+                          {role.duration}
+                        </span>
+                        <span className="text-muted-foreground/20">·</span>
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <MapPin size={12} className="opacity-60" />
+                          {role.location}
+                        </div>
+                      </div>
+                    </div>
+                    <motion.div
+                      animate={{ rotate: isExpanded ? 180 : 0 }}
+                      transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
+                      className="mt-1 text-muted-foreground flex-shrink-0"
+                    >
+                      <ChevronDown className="w-5 h-5" />
+                    </motion.div>
+                  </div>
+                </motion.button>
+
+                {/* Expandable content with smooth animation */}
+                <AnimatePresence initial={false}>
+                  {(isExpanded) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{
+                        duration: 0.4,
+                        ease: [0.4, 0, 0.2, 1],
+                      }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 md:px-6 pb-5 md:pb-6 bg-white/[0.01]">
+                        <ul className="space-y-3">
+                          {role.bullets.map((b, j) => (
+                            <motion.li
+                              key={j}
+                              initial={{ opacity: 0, x: -16, filter: "blur(4px)" }}
+                              animate={{
+                                opacity: 1,
+                                x: 0,
+                                filter: "blur(0px)",
+                              }}
+                              transition={{
+                                delay: j * 0.08,
+                                duration: 0.4,
+                                ease: "easeOut",
+                              }}
+                              className="flex items-start gap-3 text-sm text-muted-foreground leading-relaxed group/bullet hover:text-foreground/80 transition-colors"
+                            >
+                              <motion.span
+                                className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0"
+                                style={{ background: job.color }}
+                                whileHover={{ scale: 1.5 }}
+                              />
+                              <span className="flex-1">{b}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5">
