@@ -88,7 +88,7 @@ const jobs: Job[] = [
       { value: "25%", label: "Perf gain" },
       { value: "40%", label: "Fewer bugs" },
     ],
-    tags: ["Vue 3", "TypeScript", "Jasmine", "Karma", "SonarQube", "Intern.js"],
+    tags: ["Vue 3", "Element Plus", "TypeScript", "Jasmine", "Karma", "SonarQube", "Intern.js", "Leadfoot"],
   },
   {
     company: "Persistent Systems",
@@ -219,7 +219,7 @@ function ExperienceCard({ job, index }: { job: Job; index: number }) {
 }
 
 function CardContent({ job, inView, flipped = false, isEven = false }: { job: Job; inView: boolean; flipped?: boolean; isEven?: boolean }) {
-  const [expandedRole, setExpandedRole] = useState<number>(0);
+  const [expandedRole, setExpandedRole] = useState<number[]>([0,1]);
   
   return (
     <SpotlightCard className="w-full" spotlightColor={`hsl(${job.colorRaw} / 0.12)`}>
@@ -227,7 +227,7 @@ function CardContent({ job, inView, flipped = false, isEven = false }: { job: Jo
         className="glass rounded-2xl p-6 bg-background/50 backdrop-blur-xl border border-white/5 transition-all hover:border-white/10"
         style={ isEven ? { borderLeftColor: job.color, borderLeftWidth: "2px" } : { borderRightColor: job.color, borderRightWidth: "2px" } }
       >
-        <div className="hidden lg:block mb-4">
+        <div className="lg:block mb-4">
           <div>
             <h3 className="font-display text-base md:text-lg font-semibold text-foreground leading-tight"
             style={{ color: job.color }}>
@@ -238,22 +238,22 @@ function CardContent({ job, inView, flipped = false, isEven = false }: { job: Jo
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-2 mb-5 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+        <div className="grid grid-cols-3 gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/5">
           {job.stats.map((s, i) => (
             <StatCounter key={i} value={s.value} label={s.label} color={job.color} />
           ))}
         </div>
 
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-white/5 my-4">
           {job.roles.map((role, ri) => {
-            const isExpanded = expandedRole === ri;
+            const isExpanded = expandedRole.includes(ri);
             return (
               <div key={ri}>
                 <motion.button
                   onClick={() =>
-                    setExpandedRole(isExpanded ? -1 : ri)
+                    setExpandedRole(isExpanded ? expandedRole.filter((r) => r !== ri) : [...expandedRole, ri])
                   }
-                  className="w-full text-left p-5 md:p-6 hover:bg-white/[0.03] transition-colors group/role cursor-pointer"
+                  className="w-full text-left p-4 md:p-4 hover:bg-white/[0.03] transition-colors group/role cursor-pointer rounded-xl"
                   whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.02)" }}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -261,7 +261,7 @@ function CardContent({ job, inView, flipped = false, isEven = false }: { job: Jo
                       <p className="font-display text-sm md:text-base font-semibold text-foreground group-hover/role:text-white transition-colors">
                         {role.title}
                       </p>
-                      <div className="flex items-center gap-3 mt-2.5 flex-wrap">
+                      <div className="flex items-center gap-3 mt-2 flex-wrap">
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                           <Calendar size={12} className="opacity-60" />
                           <span className="font-mono">{role.period}</span>
@@ -289,7 +289,7 @@ function CardContent({ job, inView, flipped = false, isEven = false }: { job: Jo
 
                 {/* Expandable content with smooth animation */}
                 <AnimatePresence initial={false}>
-                  {(isExpanded) && (
+                  {isExpanded && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
@@ -300,7 +300,7 @@ function CardContent({ job, inView, flipped = false, isEven = false }: { job: Jo
                       }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 md:px-6 pb-5 md:pb-6 bg-white/[0.01]">
+                      <div className="px-4 py-2">
                         <ul className="space-y-3">
                           {role.bullets.map((b, j) => (
                             <motion.li

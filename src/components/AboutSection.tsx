@@ -77,7 +77,7 @@ const AboutSection = () => (
           {info.map((item, i) => (
             <RevealOnScroll key={i} delay={i * 0.08}>
               <SpotlightCard spotlightColor="rgba(200, 255, 200, 0.1)">
-                <div className="glass glass-hover rounded-xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] bg-background/50 backdrop-blur-xl border border-white/5">
+                <div className="glass glass-hover rounded-lg p-5 flex items-center gap-4 transition-all hover:scale-[1.02] bg-background/50 backdrop-blur-xl border border-white/5">
                   {item.icon}
                   <span className="font-body text-sm text-foreground">
                     {item.label}
