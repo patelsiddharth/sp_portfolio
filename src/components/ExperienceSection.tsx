@@ -156,7 +156,7 @@ function ExperienceCard({ job, index }: { job: Job; index: number }) {
     <div ref={ref} className="relative grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-0 lg:gap-8 items-start">
 
       {/* Left column (desktop) */}
-      <div className={`hidden lg:flex flex-col ${isEven ? "items-end text-right" : "items-start"}`}>
+      <div className={`hidden lg:flex flex-col ${isEven ? "items-end" : "items-start"}`}>
         {isEven && (
           <motion.div
             initial={{ opacity: 0, x: 60 }}
@@ -183,7 +183,7 @@ function ExperienceCard({ job, index }: { job: Job; index: number }) {
       </div>
 
       {/* Right column (desktop) */}
-      <div className={`hidden lg:flex flex-col ${isEven ? "items-start" : "items-end text-right"}`}>
+      <div className={`hidden lg:flex flex-col ${isEven ? "items-start" : "items-end"}`}>
         {!isEven && (
           <motion.div
             initial={{ opacity: 0, x: -60 }}
