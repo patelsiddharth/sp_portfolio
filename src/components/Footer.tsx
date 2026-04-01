@@ -3,7 +3,7 @@ import { GithubLineIcon, LinkedinIcon } from "@/lib/utils";
 
 const Footer = () => (
   <footer className="border-t border-border/30 py-8 px-6">
-    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <div className="font-display text-sm font-bold">
         <span className="gradient-text">SP.</span>
         <span className="text-muted-foreground ml-2 font-body text-xs font-normal">© 2026 Siddharth Patel</span>

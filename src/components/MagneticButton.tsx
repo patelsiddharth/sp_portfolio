@@ -14,6 +14,7 @@ export default function MagneticButton({
     className?: string;
     onClick?: () => void;
     href?: string;
+    download?: string | boolean;
     style?: React.CSSProperties;
 }) {
     const ref = useRef<HTMLDivElement>(null);

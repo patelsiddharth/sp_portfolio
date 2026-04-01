@@ -2,7 +2,7 @@
 import { useRef, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
 import type { Easing } from "framer-motion";
-import { Code2 } from "lucide-react";
+import { Code2, Download } from "lucide-react";
 import { GithubLineIcon, LinkedinIcon } from "@/lib/utils";
 import MagneticButton from "./MagneticButton";
 import SpotlightCard from "./SpotlightCard";
@@ -105,7 +105,7 @@ const HeroSection = ({ onNameExit }: HeroSectionProps) => {
             7+ years.
           </motion.p>
 
-          <motion.div {...fadeUp(0.6)} className="flex flex-wrap gap-4 mt-4">
+          <motion.div {...fadeUp(0.6)} className="flex flex-wrap gap-4 mt-4 items-center">
             <MagneticButton
               href="#projects"
               className="px-7 py-3.5 rounded-full text-sm font-medium text-primary-foreground transition-all hover:scale-105 hover:shadow-[0_0_30px_-5px_hsl(245_80%_67%_/_0.5)] border border-white/10"
@@ -114,12 +114,26 @@ const HeroSection = ({ onNameExit }: HeroSectionProps) => {
               View My Work
             </MagneticButton>
             <MagneticButton
-              href="#contact"
-              className="px-7 py-3.5 rounded-full text-sm font-medium glass glass-hover text-foreground transition-all hover:scale-105 bg-background/50 backdrop-blur-md border border-white/10"
+	              href="#contact"
+	              className="px-7 py-3.5 rounded-full text-sm font-medium glass glass-hover text-foreground transition-all hover:scale-105 bg-background/50 backdrop-blur-md border border-white/10"
+	            >
+	              Get in Touch
+	            </MagneticButton>
+	            <MagneticButton
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = '/Siddharth-Patel-Senior-Software-Engineer-Resume.pdf';
+                link.download = 'Siddharth-Patel-Resume.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              className="px-7 py-3.5 rounded-full text-sm font-medium glass glass-hover text-foreground transition-all hover:scale-105 bg-background/50 backdrop-blur-md border border-white/10 inline-flex items-center gap-2"
             >
-              Get in Touch
+              <Download size={16} />
+              Download Resume
             </MagneticButton>
-          </motion.div>
+	          </motion.div>
 
           <motion.div {...fadeUp(0.8)} className="flex gap-5 mt-10">
             {[
