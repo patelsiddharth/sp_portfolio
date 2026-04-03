@@ -8,6 +8,9 @@ import ExperienceSection from "@/components/ExperienceSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import SkillsSection from "@/components/SkillsSection";
 import AwardsSection from "@/components/AwardsSection";
+import CurrentlyReading from "@/components/CurrentlyReading";
+import Movies from "@/components/Movies";
+import Spotify from "@/components/Spotify";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
@@ -25,6 +28,9 @@ export default function Home() {
         <ProjectsSection />
         <SkillsSection />
         <AwardsSection />
+        <CurrentlyReading />
+        <Movies />
+        <Spotify />
         <ContactSection />
       </main>
       <BackToTop />
