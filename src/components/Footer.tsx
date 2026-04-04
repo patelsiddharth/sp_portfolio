@@ -1,7 +1,7 @@
 "use client";
 
 import { Code2 } from "lucide-react";
-import { GithubLineIcon, LinkedinIcon } from "@/lib/utils";
+import { GithubLineIcon, LinkedinIcon, WhatsAppIcon } from "@/lib/utils";
 import { TextHoverEffect } from "./TextHoverEffect";
 
 const Footer = () => (
@@ -69,6 +69,7 @@ const Footer = () => (
               { icon: <GithubLineIcon size={20} />, href: "https://github.com/patelsiddharth" },
               { icon: <LinkedinIcon size={20} />, href: "https://linkedin.com/in/siddharthpatel425" },
               { icon: <Code2 size={20} />, href: "https://leetcode.com/u/siddharthpatel" },
+              { icon: <WhatsAppIcon size={20} />, href: "https://wa.me/918982936044" },
             ].map((l, i) => (
               <a
                 key={i}

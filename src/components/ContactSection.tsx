@@ -1,37 +1,36 @@
 import { useState, FormEvent } from "react";
-import { Mail, Code2, Sparkles } from "lucide-react";
-import { WhatsAppIcon, LinkedinIcon, GithubLineIcon } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
+import { DottedMap } from "./ui/dotted-map";
+import { motion } from "framer-motion";
 import RevealOnScroll from "./RevealOnScroll";
 
 const FORMSPREE_ID = "mjganjdw";
 
-const socials = [
-  {
-    icon: <Mail size={18} className="text-primary" />,
-    label: "siddharthpatel425@gmail.com",
-    href: "mailto:siddharthpatel425@gmail.com",
-  },
-  {
-    icon: <WhatsAppIcon className="text-accent" />,
-    label: "+91 8982936044",
-    href: "https://wa.me/918982936044",
-  },
-  {
-    icon: <LinkedinIcon className="text-secondary" />,
-    label: "LinkedIn",
-    href: "https://linkedin.com/in/siddharthpatel425",
-  },
-  {
-    icon: <GithubLineIcon className="text-foreground" />,
-    label: "GitHub",
-    href: "https://github.com/patelsiddharth",
-  },
-  {
-    icon: <Code2 size={18} className="text-primary" />,
-    label: "LeetCode",
-    href: "https://leetcode.com/u/siddharthpatel",
-  },
-];
+const puneMarker = [{ lat: 18.52, lng: 73.85 }];
+
+const WorldMapWithPin = () => (
+  <div className="relative w-full mt-8">
+    {/* Contact info bar */}
+    <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground mb-6">
+      <span>siddharthpatel425@gmail.com</span>
+      <span className="text-border">•</span>
+      <span>+91 8982936044</span>
+      <span className="text-border">•</span>
+      <span>Jabalpur, Madhya Pradesh, India</span>
+    </div>
+
+    {/* SVG dotted world map with floating marker overlay */}
+    <DottedMap
+      markers={puneMarker}
+      mapSamples={6000}
+      dotRadius={0.22}
+      className="w-full h-auto"
+      showFloatingMarker={true}
+      floatingMarkerLabel={"I'm here"}
+      floatingMarker={puneMarker[0]}
+    />
+  </div>
+);
 
 const ContactSection = () => {
   const [status, setStatus] = useState<
@@ -80,24 +79,7 @@ const ContactSection = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <RevealOnScroll>
-            <div className="space-y-3">
-              {socials.map((s) => (
-                <a
-                  key={s.href}
-                  href={s.href}
-                  target={s.href.startsWith("mailto") ? undefined : "_blank"}
-                  className="glass glass-hover rounded-xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] group block"
-                >
-                  {s.icon}
-                  <span className="font-body text-sm text-muted-foreground group-hover:text-foreground transition-colors flex-grow">
-                    {s.label}
-                  </span>
-                  <span className="text-muted-foreground group-hover:text-primary transition-colors">
-                    →
-                  </span>
-                </a>
-              ))}
-            </div>
+            <WorldMapWithPin />
           </RevealOnScroll>
 
           <RevealOnScroll delay={0.12}>
