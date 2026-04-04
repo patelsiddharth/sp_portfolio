@@ -19,22 +19,25 @@ import BackToTop from "@/components/BackToTop";
 export default function Home() {
   return (
     <div className="bg-background text-foreground min-h-screen w-full">
-      <main>
-        <ScrollyCanvas />
-        <Navbar />
-        <HeroSection />
-        <AboutSection />
-        <ExperienceSection />
-        <ProjectsSection />
-        <SkillsSection />
-        <AwardsSection />
-        <CurrentlyReading />
-        <Movies />
-        <Spotify />
-        <ContactSection />
+      <main className="relative">
+        <div className="relative z-10 bg-background min-h-screen">
+          <ScrollyCanvas />
+          <Navbar />
+          <HeroSection />
+          <AboutSection />
+          <ExperienceSection />
+          <ProjectsSection />
+          <SkillsSection />
+          <AwardsSection />
+          <CurrentlyReading />
+          <Movies />
+          <Spotify />
+          <ContactSection />
+        </div>
+        <Footer />
       </main>
       <BackToTop />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

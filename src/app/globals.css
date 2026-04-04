@@ -1,3 +1,71 @@
+
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/fonts/BebasNeue.woff2') format('woff2'),
+       url('/fonts/BebasNeue.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+000-5FF; /* Basic Latin + Latin Supplement */
+}
+
+@font-face {
+  font-family: 'Bebas Neue Fallback';
+  src: local('Arial');
+  ascent-override: 117.32%;
+  descent-override: 39.11%;
+  line-gap-override: 0.0%;
+  size-adjust: 76.72%;
+}
+
+@font-face {
+  font-family: 'Trio Bold';
+  src: url('/fonts/trio.bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Trio Regular';
+  src: url('/fonts/trio.regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Finger Print";
+  src: url('/fonts/finger-print.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Botanic";
+  src: url('/fonts/Botanic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Dewata';
+  src: url('/fonts/Dewata.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Scoreboard';
+  src: url('/fonts/Scoreboard.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -43,7 +111,7 @@
     --glass-border: hsl(220 20% 95% / 0.08);
     --glass-hover: hsl(230 20% 12% / 0.8);
 
-    --font-display: 'Space Grotesk', sans-serif;
+    --font-display: 'Bebas Neue', 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
   }
 }
@@ -158,5 +226,13 @@
   .section-subtitle {
     @apply text-muted-foreground text-base leading-relaxed max-w-2xl;
     font-family: var(--font-body);
+  }
+
+  .justify-item {
+    justify-items: center;
+  }
+
+  .bg-black {
+    background-color: #000;
   }
 }
