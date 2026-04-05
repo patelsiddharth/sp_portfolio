@@ -11,11 +11,11 @@ import AwardsSection from "@/components/AwardsSection";
 import CurrentlyReading from "@/components/CurrentlyReading";
 import Movies from "@/components/Movies";
 import Spotify from "@/components/Spotify";
+import SocialProof from "@/components/Socialproof";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
 import BackToTop from "@/components/BackToTop";
-import PortfolioStatsSection from "@/components/PortfolioStatsSection";
 
 export default function Home() {
   return (
@@ -33,7 +33,7 @@ export default function Home() {
           <CurrentlyReading />
           <Movies />
           <Spotify />
-          <PortfolioStatsSection />
+          <SocialProof />
           <ContactSection />
         </div>
         <Footer />
