@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Code2 } from "lucide-react";
@@ -5,9 +6,9 @@ import { GithubLineIcon, LinkedinIcon, WhatsAppIcon } from "@/lib/utils";
 import { TextHoverEffect } from "./TextHoverEffect";
 
 const Footer = () => (
-  <footer className="sticky bottom-0 w-full h-[66vh] bg-black border-t border-white/10 flex items-end">
+  <footer className="sticky bottom-0 w-full bg-black border-t border-white/10 flex items-end">
     <div className="flex flex-col w-full h-full max-w-7xl mx-auto px-6 py-12">
-      <div className="grid grid-cols-1 justify-item md:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 md:justify-items-center md:grid-cols-3 gap-12">
         {/* Get in Touch */}
         <div>
           <h4 className="text-[10px] font-body font-medium tracking-[2px] uppercase text-muted-foreground mb-6">
@@ -25,7 +26,7 @@ const Footer = () => (
                   siddharthpatel425@gmail.com
                 </span>
                 <svg
-                  className="w-4 h-4 text-foreground/80 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                  className="w-4 h-4 text-foreground/80 opacity-0 translate-x-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -42,18 +43,30 @@ const Footer = () => (
         </div>
 
         {/* Navigation */}
-        <div>
+        <div style={{ minWidth: '150px' }}>
           <h4 className="text-[10px] font-body font-medium tracking-[2px] uppercase text-muted-foreground mb-6">
             Navigation
           </h4>
           <nav className="flex flex-col gap-3">
-            {["About", "Experience", "Projects", "Skills", "Awards"].map((item) => (
+
+            {/* Navigation links using array and map for DRY code */}
+            {[
+              { label: "About", href: "#about" },
+              { label: "Experience", href: "#experience" },
+              { label: "Projects", href: "#projects" },
+              { label: "Skills", href: "#skills" },
+              { label: "Awards", href: "#awards" },
+            ].map((item) => (
               <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors w-fit"
+                key={item.href}
+                href={item.href}
+                className="group flex items-center text-sm font-body text-muted-foreground hover:text-foreground transition-colors w-fit"
               >
-                {item}
+                <span className="relative flex items-center mr-2">
+                  <span className="block w-6 h-px bg-gray-400 group-hover:w-8 group-hover:bg-white transition-all duration-300"></span>
+                  <span className="block w-0 h-0 border-t-4 border-b-4 border-l-8 border-t-transparent border-b-transparent border-l-white opacity-0 group-hover:opacity-100 transition-all duration-300 ml-[-2px]"></span>
+                </span>
+                {item.label}
               </a>
             ))}
           </nav>
@@ -85,21 +98,7 @@ const Footer = () => (
       </div>
 
       {/* Large Name Text */}
-      <div className="relative select-none flex-1">
-        {/* <div
-          className="text-center leading-none"
-          style={{
-            fontSize: "clamp(60px, 15vw, 200px)",
-            letterSpacing: '0.04em',
-            color: 'transparent',
-            WebkitTextStroke: '2px rgba(255,255,255,0.18)',
-            fontFamily: "'Dewata', 'Botanic' ,'Finger Print', 'Trio Regular', 'Trio Bold', 'Bebas Neue', 'Bebas Neue Fallback', Arial, sans-serif"
-          }}
-        >
-          SIDDHARTH
-          <span className="text-[20px] align-top ml-2 opacity-30 font-display">TM</span>
-        </div>
-        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black via-black/90 to-transparent z-20 pointer-events-none"></div> */}
+      <div className="relative select-none flex-1 py-8 md:py-0">
         <TextHoverEffect
           text="SIDDHARTH" 
           duration={0.5}

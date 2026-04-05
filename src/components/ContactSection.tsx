@@ -1,12 +1,11 @@
 import { useState, FormEvent } from "react";
 import { Sparkles } from "lucide-react";
 import { DottedMap } from "./ui/dotted-map";
-import { motion } from "framer-motion";
 import RevealOnScroll from "./RevealOnScroll";
 
 const FORMSPREE_ID = "mjganjdw";
 
-const puneMarker = [{ lat: 18.52, lng: 73.85 }];
+const marker = [{ lat: 23.10, lng: 79.59 }];
 
 const WorldMapWithPin = () => (
   <div className="relative w-full mt-8">
@@ -21,13 +20,13 @@ const WorldMapWithPin = () => (
 
     {/* SVG dotted world map with floating marker overlay */}
     <DottedMap
-      markers={puneMarker}
+      markers={marker}
       mapSamples={6000}
       dotRadius={0.22}
       className="w-full h-auto"
       showFloatingMarker={true}
       floatingMarkerLabel={"I'm here"}
-      floatingMarker={puneMarker[0]}
+      floatingMarker={marker[0]}
     />
   </div>
 );

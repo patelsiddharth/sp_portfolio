@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import { createMap } from "svg-dotted-map";
 import { cn } from "@/lib/utils";
@@ -134,10 +136,16 @@ export function DottedMap({
             alignItems: "center",
           }}
         >
-          <div className="glass rounded-lg px-2.5 py-1 text-[10px] font-medium text-foreground whitespace-nowrap shadow-lg border border-border/50">
+          <div className="glass rounded-lg px-2.5 py-1 text-[12px] font-medium text-foreground whitespace-nowrap shadow-lg border border-border/50">
             {floatingMarkerLabel}
           </div>
-          <div className="w-px h-12 bg-gradient-to-b from-primary to-transparent" />
+          <div className="w-px h-14 bg-gradient-to-b from-primary to-transparent" />
+          <span className="relative flex items-center justify-center">
+            <span className="absolute inline-flex h-8 w-8 rounded-full bg-primary opacity-30 animate-ping"></span>
+            <span className="absolute inline-flex h-8 w-8 rounded-full bg-primary opacity-20 animate-ping delay-1000"></span>
+            <span className="absolute inline-flex h-8 w-8 rounded-full bg-primary opacity-10 animate-ping delay-2000"></span>
+            {/* <span className="relative inline-flex h-2 w-2 rounded-full bg-primary border-2 border-white shadow-lg"></span> */}
+          </span>
         </div>
       )}
     </div>

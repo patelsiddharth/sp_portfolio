@@ -15,6 +15,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
 import BackToTop from "@/components/BackToTop";
+import PortfolioStatsSection from "@/components/PortfolioStatsSection";
 
 export default function Home() {
   return (
@@ -32,6 +33,7 @@ export default function Home() {
           <CurrentlyReading />
           <Movies />
           <Spotify />
+          <PortfolioStatsSection />
           <ContactSection />
         </div>
         <Footer />
