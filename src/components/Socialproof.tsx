@@ -1,15 +1,21 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { motion, AnimatePresence, useInView, useSpring, useTransform } from "framer-motion";
 import {
   Heart, Eye, Send, MessageSquare, User,
   Loader2, CheckCircle2, Star, ShieldCheck, ChevronDown
 } from "lucide-react";
 import RevealOnScroll from "./RevealOnScroll";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Shadcn UI components
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
+// ─── Types ───────────────────────────────────────────────────────────────────
 interface Review {
   id: string;
   name: string;
@@ -35,28 +41,22 @@ const MOODS = [
 const MOOD_FILTERS = [{ emoji: "✦", label: "All" }, ...MOODS];
 const PAGE_SIZE = 5;
 
-// ─── Animated counter ────────────────────────────────────────────────────────
+// ─── Animated counter (Magic UI Style Number Ticker) ─────────────────────────
 
 function AnimatedCount({ value }: { value: number }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
-  const [displayed, setDisplayed] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+  
+  const spring = useSpring(0, { mass: 1, stiffness: 75, damping: 15 });
+  const display = useTransform(spring, (current) => Math.round(current).toLocaleString());
 
   useEffect(() => {
-    if (!inView || value === 0) return;
-    let start = 0;
-    const duration = 1200;
-    const step = 16;
-    const increment = value / (duration / step);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= value) { setDisplayed(value); clearInterval(timer); }
-      else setDisplayed(Math.floor(start));
-    }, step);
-    return () => clearInterval(timer);
-  }, [inView, value]);
+    if (inView) {
+      spring.set(value);
+    }
+  }, [inView, spring, value]);
 
-  return <span ref={ref}>{displayed.toLocaleString()}</span>;
+  return <motion.span ref={ref}>{display}</motion.span>;
 }
 
 // ─── Time formatter ───────────────────────────────────────────────────────────
@@ -118,21 +118,24 @@ function ReviewCard({ review, index, isNew }: { review: Review; index: number; i
       animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
       transition={{ delay: isNew ? 0 : index * 0.05, duration: 0.4, ease: "easeOut" }}
-      className={`group glass rounded-2xl p-5 border bg-background/40 backdrop-blur-xl transition-all hover:border-white/10 ${isNew ? "border-primary/30" : "border-white/5"
-        }`}
+      className={`group glass rounded-2xl p-5 border bg-background/40 backdrop-blur-xl transition-all hover:border-white/10 ${
+        isNew ? "border-primary/30" : "border-white/5"
+      }`}
     >
       <div className="flex items-start gap-4">
-        {/* Avatar */}
+        {/* Avatar utilizing shadcn ui */}
         <div className="relative flex-shrink-0">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white"
-            style={{ background: `hsl(${hue} 70% 55%)` }}
-          >
-            {initials}
-          </div>
-          {/* Verified badge */}
-          <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
-            <ShieldCheck className="w-2.5 h-2.5 text-black" />
+          <Avatar className="w-10 h-10 border-none">
+            <AvatarFallback 
+              className="text-xs font-bold text-white" 
+              style={{ background: `hsl(${hue} 70% 55%)` }}
+            >
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+            {review.mood}
           </div>
         </div>
 
@@ -141,7 +144,6 @@ function ReviewCard({ review, index, isNew }: { review: Review; index: number; i
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <div className="flex items-center gap-2">
               <span className="font-body text-sm font-semibold text-foreground">{review.name}</span>
-              <span className="text-base leading-none">{review.mood}</span>
               {isNew && (
                 <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
                   new
@@ -153,11 +155,6 @@ function ReviewCard({ review, index, isNew }: { review: Review; index: number; i
             </span>
           </div>
           <p className="font-body text-sm text-muted-foreground/80 leading-relaxed">{review.message}</p>
-          <div className="flex gap-0.5 mt-2.5">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-3 h-3 fill-yellow-500/50 text-yellow-500/50" />
-            ))}
-          </div>
         </div>
       </div>
     </motion.div>
@@ -269,8 +266,8 @@ export default function SocialProof() {
         <RevealOnScroll>
           <div className="grid grid-cols-2 gap-4 mb-12">
 
-            {/* Visits */}
-            <div className="glass rounded-2xl p-6 border border-white/5 bg-background/40 backdrop-blur-xl flex items-center gap-4">
+            {/* Visits wrapped in shadcn Card component context */}
+            <Card className="glass rounded-2xl p-6 border-white/5 bg-background/40 backdrop-blur-xl flex items-center gap-4 shadow-none">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: "linear-gradient(135deg, hsl(245 80% 67% / 0.3), hsl(170 70% 50% / 0.2))" }}>
                 <Eye className="w-5 h-5 text-primary" />
@@ -283,13 +280,13 @@ export default function SocialProof() {
                   {stats && stats.visits === 1 ? "1 unique visitor" : `${(stats?.visits ?? 0).toLocaleString()} unique visitors`}
                 </div>
               </div>
-            </div>
+            </Card>
 
-            {/* Like */}
+            {/* Like Component wrapped securely */}
             <motion.button
               onClick={handleLike}
               disabled={likeLoading || !stats || stats.hasLiked}
-              className="relative glass rounded-2xl p-6 border border-white/5 bg-background/40 backdrop-blur-xl flex items-center gap-4 cursor-pointer text-left group transition-all hover:border-white/10 disabled:cursor-not-allowed overflow-hidden"
+              className="relative glass rounded-2xl p-6 border border-white/5 bg-background/40 backdrop-blur-xl flex items-center gap-4 cursor-pointer text-left group transition-all hover:border-white/10 disabled:cursor-not-allowed overflow-hidden shadow-none"
               whileHover={!stats?.hasLiked ? { scale: 1.01 } : {}}
               whileTap={!stats?.hasLiked ? { scale: 0.98 } : {}}
             >
@@ -332,21 +329,21 @@ export default function SocialProof() {
         {/* ── Form + Reviews ── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
 
-          {/* ── Review Form ── */}
+          {/* ── Review Form (shadcn Card) ── */}
           <RevealOnScroll>
-            <div className="glass rounded-2xl border border-white/5 bg-background/40 backdrop-blur-xl overflow-hidden">
+            <Card className="glass rounded-2xl border-white/5 bg-background/40 backdrop-blur-xl overflow-hidden shadow-none">
               {/* Header */}
-              <div className="px-7 pt-7 pb-5 border-b border-white/5">
+              <CardHeader className="px-7 pt-7 pb-5 border-b border-white/5">
                 <div className="flex items-center gap-3 mb-1">
                   <MessageSquare className="w-5 h-5 text-primary" />
-                  <h3 className="font-display text-base font-semibold">Leave a Review</h3>
+                  <CardTitle className="font-display text-base font-semibold">Leave a Review</CardTitle>
                 </div>
-                <p className="font-body text-xs text-muted-foreground">
+                <CardDescription className="font-body text-xs text-muted-foreground">
                   Worked with me or just browsing? I'd love to hear from you.
-                </p>
-              </div>
+                </CardDescription>
+              </CardHeader>
 
-              <div className="p-7 space-y-4">
+              <CardContent className="p-7 space-y-4">
                 <AnimatePresence mode="wait">
                   {submitState === "success" ? (
                     <motion.div
@@ -381,10 +378,11 @@ export default function SocialProof() {
                               onClick={() => setFormState((p) => ({ ...p, mood: emoji }))}
                               whileTap={{ scale: 0.9 }}
                               title={label}
-                              className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all border ${formState.mood === emoji
+                              className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all border ${
+                                formState.mood === emoji
                                   ? "border-primary/50 bg-primary/15 scale-110"
                                   : "border-white/5 bg-white/5 hover:bg-white/10"
-                                }`}
+                              }`}
                             >
                               {emoji}
                             </motion.button>
@@ -392,22 +390,21 @@ export default function SocialProof() {
                         </div>
                       </div>
 
-                      {/* Name */}
+                      {/* Name (shadcn Input) */}
                       <div>
                         <label className="font-body text-xs text-muted-foreground mb-1.5 flex items-center gap-1.5">
                           <User className="w-3 h-3" /> Your name
                         </label>
-                        <input
-                          type="text"
+                        <Input
                           value={formState.name}
                           onChange={(e) => setFormState((p) => ({ ...p, name: e.target.value }))}
                           placeholder="Jane Doe"
                           maxLength={60}
-                          className="w-full bg-muted/40 border border-border/40 rounded-xl px-4 py-3 text-sm font-body text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-primary/50 transition-colors"
+                          className="bg-muted/40 border-border/40 rounded-xl h-12 px-4 text-sm font-body"
                         />
                       </div>
 
-                      {/* Message */}
+                      {/* Message (shadcn Textarea) */}
                       <div>
                         <div className="flex items-center justify-between mb-1.5">
                           <label className="font-body text-xs text-muted-foreground flex items-center gap-1.5">
@@ -417,13 +414,13 @@ export default function SocialProof() {
                             {charLeft} left
                           </span>
                         </div>
-                        <textarea
+                        <Textarea
                           value={formState.message}
                           onChange={(e) => setFormState((p) => ({ ...p, message: e.target.value }))}
                           placeholder="This portfolio is absolutely stunning..."
                           rows={4}
                           maxLength={500}
-                          className="w-full bg-muted/40 border border-border/40 rounded-xl px-4 py-3 text-sm font-body text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-primary/50 transition-colors resize-none"
+                          className="bg-muted/40 border-border/40 rounded-xl px-4 py-3 text-sm font-body resize-none"
                         />
                       </div>
 
@@ -448,36 +445,36 @@ export default function SocialProof() {
                             exit={{ opacity: 0, height: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="mt-1 rounded-xl border border-primary/20 bg-primary/5 p-1">
-                              <ReviewCard
-                                review={{
-                                  id: "preview",
-                                  name: formState.name,
-                                  message: formState.message,
-                                  mood: formState.mood,
-                                  createdAt: Date.now(),
-                                }}
-                                index={0}
-                              />
-                            </div>
+                            <ReviewCard
+                              review={{
+                                id: "preview",
+                                name: formState.name,
+                                message: formState.message,
+                                mood: formState.mood,
+                                createdAt: Date.now(),
+                              }}
+                              index={0}
+                            />
                           </motion.div>
                         )}
                       </AnimatePresence>
 
-                      {/* Submit */}
-                      <motion.button
+                      {/* Submit (shadcn Button wrapped with motion) */}
+                      <Button
                         onClick={handleSubmit}
                         disabled={submitState === "submitting" || !formState.name.trim() || !formState.message.trim()}
-                        className="w-full py-3.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2 transition-all hover:opacity-90 hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                        className="w-full h-12 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90 hover:scale-[1.01]"
                         style={{ background: "var(--gradient-primary)" }}
-                        whileTap={{ scale: 0.98 }}
+                        asChild
                       >
-                        {submitState === "submitting" ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>
-                        ) : (
-                          <><Send className="w-4 h-4" /> Submit Review</>
-                        )}
-                      </motion.button>
+                        <motion.button whileTap={{ scale: 0.98 }}>
+                          {submitState === "submitting" ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                          ) : (
+                            <><Send className="w-4 h-4 mr-2" /> Submit Review</>
+                          )}
+                        </motion.button>
+                      </Button>
 
                       {/* Trust note */}
                       <p className="text-center text-[10px] text-muted-foreground/40 flex items-center justify-center gap-1.5">
@@ -491,8 +488,8 @@ export default function SocialProof() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </RevealOnScroll>
 
           {/* ── Reviews List ── */}
@@ -509,13 +506,6 @@ export default function SocialProof() {
                       : "No reviews yet"}
                   </span>
                 </div>
-                {reviews.length > 0 && (
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-yellow-500/70 text-yellow-500/70" />
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Mood filter tabs */}
@@ -531,10 +521,11 @@ export default function SocialProof() {
                         key={emoji}
                         onClick={() => { setActiveFilter(emoji); setVisibleCount(PAGE_SIZE); }}
                         whileTap={{ scale: 0.92 }}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body transition-all border ${activeFilter === emoji
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body transition-all border ${
+                          activeFilter === emoji
                             ? "border-primary/50 bg-primary/15 text-foreground"
                             : "border-white/5 bg-white/5 text-muted-foreground hover:border-white/10 hover:text-foreground"
-                          }`}
+                        }`}
                       >
                         <span>{emoji}</span>
                         <span>{label}</span>
@@ -579,17 +570,22 @@ export default function SocialProof() {
                 </AnimatePresence>
               </div>
 
-              {/* Load more */}
+              {/* Load more (shadcn Button) */}
               {hasMore && (
-                <motion.button
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <Button
+                  variant="outline"
                   onClick={() => setVisibleCount((p) => p + PAGE_SIZE)}
-                  className="w-full py-3 rounded-xl text-xs font-body text-muted-foreground border border-white/5 hover:border-white/10 hover:text-foreground transition-all flex items-center justify-center gap-2 group"
+                  className="w-full h-12 rounded-xl text-xs font-body text-muted-foreground border border-white/5 hover:border-white/10 hover:bg-white/5 bg-transparent transition-all group"
+                  asChild
                 >
-                  <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-                  Load {Math.min(PAGE_SIZE, filtered.length - visibleCount)} more reviews
-                </motion.button>
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <ChevronDown className="w-4 h-4 mr-2 group-hover:translate-y-0.5 transition-transform" />
+                    Load {Math.min(PAGE_SIZE, filtered.length - visibleCount)} more reviews
+                  </motion.button>
+                </Button>
               )}
             </div>
           </RevealOnScroll>

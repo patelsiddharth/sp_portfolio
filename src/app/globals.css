@@ -24,6 +24,23 @@
   font-style: normal;
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'RollandinEmilie';
+  src: url('/fonts/RollandinEmilie.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BuenosAiresNF';
+  src: url('/fonts/BuenosAiresNF.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 
 @font-face {
   font-family: "Finger Print";

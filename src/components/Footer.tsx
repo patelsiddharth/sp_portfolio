@@ -108,6 +108,8 @@ const Footer = () => (
           // fontFamily="Botanic"
           // fontFamily="Finger Print"
           fontFamily="Trio Regular"
+          // fontFamily="BuenosAiresNF"
+          // fontFamily="RollandinEmilie"
           // fontFamily="Trio Bold"
           // fontFamily="Bebas Neue"
           // fontFamily="Bebas Neue Fallback"
