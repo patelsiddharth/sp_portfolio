@@ -82,7 +82,7 @@ function GlobeCell() {
       markers: [
         { location: [JABALPUR_LAT, JABALPUR_LNG], size: 0.06 },
       ],
-      onRender(state) {
+      onRender(state: any) {
         if (!pointerInteracting.current) {
           phi += 0.003;
         }
@@ -90,7 +90,7 @@ function GlobeCell() {
         state.width = width * 2;
         state.height = width * 2;
       },
-    });
+    } as any);
 
     return () => {
       globeRef.current?.destroy();
