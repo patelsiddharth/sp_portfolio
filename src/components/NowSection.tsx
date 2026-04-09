@@ -455,36 +455,39 @@ export default function NowSection() {
           │Status│  Spotify                 │
           └──────┴──────────────────────────┘
         */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Globe */}
+            <BentoCard
+              className="md:row-span-2 min-h-[360px]"
+              glowColor="hsl(245 80% 67% / 0.15)"
+              delay={0}
+            >
+              <GlobeCell />
+            </BentoCard>
 
-          {/* Globe */}
-          <BentoCard
-            className="md:row-span-2 min-h-[360px]"
-            glowColor="hsl(245 80% 67% / 0.15)"
-            delay={0}
-          >
-            <GlobeCell />
-          </BentoCard>
+            {/* Book */}
+            <BentoCard className="md:col-span-2 min-h-[140px]" glowColor="hsl(170 70% 50% / 0.12)" delay={0.08}>
+              <BookCell book={book} />
+            </BentoCard>
 
-          {/* Book */}
-          <BentoCard className="md:col-span-2 min-h-[140px]" glowColor="hsl(170 70% 50% / 0.12)" delay={0.08}>
-            <BookCell book={book} />
-          </BentoCard>
+            {/* Movie */}
+            <BentoCard className="md:col-span-2 min-h-[140px]" glowColor="hsl(330 75% 60% / 0.12)" delay={0.14}>
+              <MovieCell movie={movie} />
+            </BentoCard>
+          </div>
 
-          {/* Movie */}
-          <BentoCard className="md:col-span-2 min-h-[140px]" glowColor="hsl(330 75% 60% / 0.12)" delay={0.14}>
-            <MovieCell movie={movie} />
-          </BentoCard>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Status */}
+            <BentoCard className="min-h-[130px]" glowColor="hsl(245 80% 67% / 0.12)" delay={0.2}>
+              <StatusCell />
+            </BentoCard>
 
-          {/* Status */}
-          <BentoCard className="min-h-[130px]" glowColor="hsl(245 80% 67% / 0.12)" delay={0.2}>
-            <StatusCell />
-          </BentoCard>
-
-          {/* Spotify */}
-          <BentoCard className="md:col-span-2 min-h-[130px]" glowColor="hsl(141 76% 48% / 0.1)" delay={0.26}>
-            <SpotifyCell song={song} />
-          </BentoCard>
+            {/* Spotify */}
+            <BentoCard className="md:col-span-2 min-h-[130px]" glowColor="hsl(141 76% 48% / 0.1)" delay={0.26}>
+              <SpotifyCell song={song} />
+            </BentoCard>
+          </div>
 
         </div>
       </div>
