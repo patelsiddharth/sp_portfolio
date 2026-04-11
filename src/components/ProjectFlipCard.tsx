@@ -103,8 +103,12 @@ export default function ProjectFlipCard({
           {/* Front */}
           <motion.div
             className="absolute w-full h-full rounded-2xl overflow-hidden"
+            initial={false}
+            animate={{ opacity: isFlipped ? 0 : 1 }}
+            transition={{ duration: 0.3 }}
             style={{
               backfaceVisibility: "hidden",
+              willChange: "opacity",
             }}
           >
             {frontContent}
@@ -113,9 +117,13 @@ export default function ProjectFlipCard({
           {/* Back */}
           <motion.div
             className="absolute w-full h-full rounded-2xl overflow-hidden"
+            initial={false}
+            animate={{ opacity: isFlipped ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
+              willChange: "opacity",
             }}
           >
             {backContent}
