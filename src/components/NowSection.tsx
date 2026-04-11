@@ -11,6 +11,7 @@ import {
   Disc3,
   Radio,
   Calendar,
+  Tags,
 } from "lucide-react";
 import createGlobe, { COBEOptions } from "cobe";
 import RevealOnScroll from "./RevealOnScroll";
@@ -26,6 +27,9 @@ interface Book {
   average_rating: string;
   num_pages: string;
   link: string;
+  book_description?: string;
+  total_pages: string;
+  pubDate: string;
 }
 
 interface Movie {
@@ -36,6 +40,9 @@ interface Movie {
   year?: string;
   rating?: string;
   rewatch?: boolean;
+  backdrop?: string;
+  genres: string[];
+  tmdbRating?: number;
 }
 
 interface Song {
@@ -46,8 +53,6 @@ interface Song {
 }
 
 // ─── Globe ────────────────────────────────────────────────────────────────────
-// Jabalpur, MP, India
-
 function GlobeCell() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -269,7 +274,6 @@ function SpotifyCell({ song }: { song: Song | null }) {
 }
 
 // ─── Movie Cell ───────────────────────────────────────────────────────────────
-
 function MovieCell({ movie }: { movie: Movie | null }) {
   if (!movie)
     return (
@@ -285,15 +289,7 @@ function MovieCell({ movie }: { movie: Movie | null }) {
       </div>
     );
 
-  const cleanDesc = movie.description.replace(/<[^>]*>/g, "").slice(0, 220);
-
-  const formatRating = (rating: string) => {
-    const num = parseFloat(rating);
-    if (isNaN(num)) return null;
-    const fullStars = Math.floor(num);
-    const hasHalf = num % 1 >= 0.5;
-    return { fullStars, hasHalf, num };
-  };
+  const cleanDesc = movie.description?.replace(/<[^>]*>/g, "") || "";
 
   return (
     <a
@@ -302,7 +298,84 @@ function MovieCell({ movie }: { movie: Movie | null }) {
       rel="noopener noreferrer"
       className="group flex h-full gap-4"
     >
-      <div className="relative flex-shrink-0 w-28 sm:w-28 h-full rounded-xl overflow-hidden border border-white/10 bg-muted shadow-xl">
+      {/* Backdrop */}
+      {movie.backdrop && (
+        <div className="absolute inset-0 opacity-40 group-hover:opacity-50 transition">
+          <img
+            src={movie.backdrop}
+            alt="Last watched backdrop image"
+            className="w-full h-full object-cover scale-105 group-hover:scale-110 transition duration-700"
+          />
+        </div>
+      )}
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col flex-1 min-w-0 justify-between">
+        <div>
+          {/* Label */}
+          <span className="inline-block text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/40 mb-1.5">
+            Last Watched
+          </span>
+
+          {/* Title + CTA */}
+          <div className="flex justify-between gap-3">
+            <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-secondary transition-colors">
+              {movie.title}
+            </p>
+
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-secondary/70 transition-colors whitespace-nowrap">
+              <span>View on Letterboxd</span>
+              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground/60 mt-2">
+            <div className="flex items-center gap-1">
+              {movie.tmdbRating && (
+                <>
+                  <Star className="w-3 h-3 fill-muted-foreground text-muted-foreground" />
+                  <span>{movie.tmdbRating.toFixed(1)}</span>
+                </>
+              )}{" "}
+            </div>
+            ·
+            <div className="flex items-center gap-1">
+              {movie.year && (
+                <>
+                  <Calendar className="w-3 h-3 text-muted-foreground/60" />
+                  <span className="text-xs text-muted-foreground/70">
+                    {movie.year}
+                  </span>
+                </>
+              )}{" "}
+            </div>
+            ·
+            <div className="flex items-center gap-1">
+              {movie.genres?.length > 0 && (
+                <>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground/50">
+                    <Tags className="w-3 h-3" />
+                    <span>{movie.genres.slice(0, 2).join(", ")}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Description */}
+          {cleanDesc && (
+            <p className="font-body text-xs text-muted-foreground/60 mt-2 line-clamp-4 leading-relaxed">
+              {cleanDesc}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Poster */}
+      <div className="relative flex-shrink-0 w-28 h-full rounded-xl overflow-hidden border border-white/10 bg-muted shadow-xl z-10">
         {movie.poster ? (
           <img
             src={movie.poster}
@@ -314,48 +387,11 @@ function MovieCell({ movie }: { movie: Movie | null }) {
             <Film className="w-12 h-12 text-muted-foreground/20" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+
         <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-lg px-2.5 py-1.5">
           <Film className="w-4 h-4 text-white" />
-        </div>
-      </div>
-
-      <div className="flex flex-col flex-1 min-w-0 justify-between">
-        <div>
-          <span className="inline-block text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/40 mb-1.5">
-            Last Watched
-          </span>
-          <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-secondary transition-colors">
-            {movie.title}
-          </p>
-          {cleanDesc && (
-            <p className="font-body text-sm text-muted-foreground/60 mt-2 line-clamp-4 leading-relaxed">
-              {cleanDesc}
-              {movie.description.length > 220 ? "…" : ""}
-            </p>
-          )}
-
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            {movie.year && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted border border-white/10">
-                <Calendar className="w-3 h-3 text-muted-foreground/60" />
-                <span className="text-xs text-muted-foreground/70">{movie.year}</span>
-              </div>
-            )}
-            {movie.rating && formatRating(movie.rating) && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30">
-                <span className="text-xs font-semibold text-yellow-500/90">
-                  {formatRating(movie.rating)?.num.toFixed(1)}
-                </span>
-                <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-secondary/70 transition-colors">
-          <span>View on LetterBoxd</span>
-          <ExternalLink className="w-4 h-4" />
         </div>
       </div>
     </a>
@@ -363,7 +399,6 @@ function MovieCell({ movie }: { movie: Movie | null }) {
 }
 
 // ─── Book Cell ────────────────────────────────────────────────────────────────
-
 function BookCell({ book }: { book: Book | null }) {
   if (!book)
     return (
@@ -383,7 +418,23 @@ function BookCell({ book }: { book: Book | null }) {
     book.book_large_image_url ||
     book.book_medium_image_url ||
     book.book_small_image_url;
-  const rating = parseFloat(book.average_rating);
+
+  const READING_START_DATE = new Date(book.pubDate);
+  const totalPages = parseInt(book.total_pages);
+
+  // days since started
+  const daysReading = Math.max(
+    1,
+    Math.floor(
+      (Date.now() - READING_START_DATE.getTime()) / (1000 * 60 * 60 * 24),
+    ),
+  );
+
+  // clamp so it feels realistic
+  const currentPage = Math.min(totalPages - 5, daysReading * 25);
+
+  // progress %
+  const progress = currentPage / totalPages;
 
   return (
     <a
@@ -392,12 +443,37 @@ function BookCell({ book }: { book: Book | null }) {
       rel="noopener noreferrer"
       className="group flex h-full gap-4"
     >
-      <div className="relative flex-shrink-0 w-28 sm:w-28 h-full rounded-xl overflow-hidden border border-white/10 bg-muted shadow-xl">
+      {/* Backdrop */}
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt=""
+          className="
+            absolute 
+            right-[-1%] top-1/2 
+            -translate-y-1/2 
+            rotate-12 
+            scale-125 
+            opacity-10 
+            group-hover:opacity-20 
+            transition duration-700
+            pointer-events-none
+          "
+        />
+      )}
+
+      {/* Overlay */}
+      <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+
+      <div className="relative z-10 flex-shrink-0 w-28 h-full rounded-xl overflow-hidden border border-white/10 bg-muted shadow-xl">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={book.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700
+              shadow-lg group-hover:shadow-2xl transition
+              ring-1 ring-white/10
+            "
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -410,40 +486,49 @@ function BookCell({ book }: { book: Book | null }) {
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 min-w-0 justify-between">
+      <div className="relative z-10 flex flex-col flex-1 min-w-0 justify-between">
         <div>
           <span className="inline-block text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/40 mb-1.5">
             Currently Reading
           </span>
-          <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-accent transition-colors">
-            {book.title}
-          </p>
+          <div className="flex justify-between">
+            <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-accent transition-colors">
+              {book.title}
+            </p>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-accent/70 transition-colors">
+              <span>View on Goodreads</span>
+              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
+            </div>
+          </div>
           <p className="font-body text-sm text-muted-foreground/70 mt-1.5">
             {book.author_name}
           </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {rating > 0 && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30">
-              <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-              <span className="text-sm font-semibold text-yellow-500/90">
-                {book.average_rating}
-              </span>
-            </div>
-          )}
-          {book.num_pages && (
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-muted border border-white/10">
-              <span className="text-sm text-muted-foreground/70">
-                {book.num_pages}p
-              </span>
-            </div>
+          {book.book_description && (
+            <p className="font-body text-xs text-muted-foreground/60 mt-2 line-clamp-3 leading-relaxed">
+              {book.book_description.replace(/<[^>]*>/g, "")}
+            </p>
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-accent/70 transition-colors">
-          <span>View on Goodreads</span>
-          <ExternalLink className="w-4 h-4" />
+        {/* Progress Bar */}
+        <div className="mt-3">
+          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-accent to-purple-400"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress * 100}%` }}
+              transition={{ duration: 1 }}
+            />
+          </div>
+
+          <div className="flex justify-between items-center mt-1">
+            <p className="text-[10px] text-muted-foreground">
+              {currentPage} / {totalPages} pages
+            </p>
+            <p className="text-[10px] text-muted-foreground/50">
+              {Math.round(progress * 100)}%
+            </p>
+          </div>
         </div>
       </div>
     </a>
@@ -599,7 +684,6 @@ export default function NowSection() {
               <BookCell book={book} />
             </BentoCard>
 
-            {/* Movie */}
             <BentoCard
               className="md:col-span-2 min-h-[220px]"
               glowColor="hsl(330 75% 60% / 0.12)"
@@ -610,15 +694,6 @@ export default function NowSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* Status */}
-            <BentoCard
-              className="min-h-[130px]"
-              glowColor="hsl(245 80% 67% / 0.12)"
-              delay={0.2}
-            >
-              <StatusCell />
-            </BentoCard>
-
             {/* Spotify */}
             <BentoCard
               className="md:col-span-2 min-h-[130px]"
@@ -626,6 +701,15 @@ export default function NowSection() {
               delay={0.26}
             >
               <SpotifyCell song={song} />
+            </BentoCard>
+
+            {/* Status */}
+            <BentoCard
+              className="min-h-[130px]"
+              glowColor="hsl(245 80% 67% / 0.12)"
+              delay={0.2}
+            >
+              <StatusCell />
             </BentoCard>
           </div>
         </div>

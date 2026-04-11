@@ -17,7 +17,7 @@ export async function GET() {
 
     const parser = new xml2js.Parser();
     const data = await parser.parseStringPromise(xml);
-
+    
     const items = data?.rss?.channel?.[0]?.item || [];
 
     const books = items.map((item: any) => ({
@@ -30,6 +30,8 @@ export async function GET() {
       average_rating: item.average_rating?.[0] || "0",
       num_pages: item.num_pages?.[0] || "",
       link: item.link?.[0] || "",
+      total_pages: item.book?.[0]?.num_pages?.[0] || "",
+      pubDate: item.pubDate?.[0] || "",
     }));
 
     return NextResponse.json({ books });
