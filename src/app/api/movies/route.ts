@@ -31,7 +31,9 @@ export async function GET() {
       link: item.link?.[0] || "",
       description,
       poster,
-      pubDate: item.pubDate?.[0] || "",
+      year: item["letterboxd:filmYear"]?.[0] || "",
+      rating: item["letterboxd:memberRating"]?.[0] || "",
+      rewatch: item["letterboxd:rewatch"]?.[0] === "Yes",
     };
 
     // ✅ Return only ONE movie
