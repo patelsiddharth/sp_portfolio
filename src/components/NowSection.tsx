@@ -10,6 +10,7 @@ import {
   ExternalLink,
   Disc3,
   Radio,
+  Calendar,
 } from "lucide-react";
 import createGlobe, { COBEOptions } from "cobe";
 import RevealOnScroll from "./RevealOnScroll";
@@ -32,6 +33,9 @@ interface Movie {
   link: string;
   description: string;
   poster: string;
+  year?: string;
+  rating?: string;
+  rewatch?: boolean;
 }
 
 interface Song {
@@ -48,11 +52,10 @@ function GlobeCell() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    // Jabalpur coordinates
     const LAT = 23.18;
     const LNG = 79.95;
-    const theta = LAT * (Math.PI / 180); // latitude tilt
-    let phi = LNG * (Math.PI / 180); // start centered on Jabalpur
+    const theta = LAT * (Math.PI / 180);
+    let phi = -LNG * (Math.PI / 90);
     let width = 0;
     let isDragging = false;
     let lastPointerX = 0;
@@ -71,7 +74,7 @@ function GlobeCell() {
       width: width * 2,
       height: width * 2,
       devicePixelRatio: 2,
-      phi: 0,
+      phi,
       theta,
       dark: 1,
       diffuse: 1.2,
@@ -80,9 +83,7 @@ function GlobeCell() {
       baseColor: [0.18, 0.14, 0.35],
       markerColor: [0.6, 0.52, 1.0],
       glowColor: [0.35, 0.25, 0.7],
-      markers: [
-        { location: [LAT, LNG], size: 0.07 }, // Jabalpur
-      ],
+      markers: [{ location: [LAT, LNG], size: 0.07 }],
       onRender: (state: any) => {
         state.width = width * 2;
         state.height = width * 2;
@@ -96,12 +97,10 @@ function GlobeCell() {
     const animate = () => {
       if (!isDragging) {
         if (Math.abs(velocity) > 0.0001) {
-          // Apply momentum with friction
           phi += velocity;
           velocity *= 0.92;
         } else {
           velocity = 0;
-          // Gentle auto-rotation when idle
           phi += 0.002;
         }
       }
@@ -121,13 +120,12 @@ function GlobeCell() {
       const delta = clientX - lastPointerX;
       const dPhi = delta * 0.005;
       phi += dPhi;
-      velocity = dPhi; // track velocity for inertia
+      velocity = dPhi;
       lastPointerX = clientX;
     };
 
     const handlePointerUp = () => {
       isDragging = false;
-      // velocity carries forward for momentum effect
     };
 
     const wrapper = canvasRef.current?.parentElement;
@@ -275,60 +273,90 @@ function SpotifyCell({ song }: { song: Song | null }) {
 function MovieCell({ movie }: { movie: Movie | null }) {
   if (!movie)
     return (
-      <div className="flex items-center gap-3 h-full min-h-[90px]">
-        <div className="w-10 h-14 rounded-lg bg-muted animate-pulse flex-shrink-0" />
-        <div className="flex-1 space-y-2">
-          <div className="h-3 w-3/4 bg-muted rounded animate-pulse" />
-          <div className="h-2.5 w-1/2 bg-muted rounded animate-pulse" />
+      <div className="flex h-full gap-4">
+        <div className="w-36 sm:w-40 h-full rounded-xl bg-muted animate-pulse flex-shrink-0" />
+        <div className="flex-1 flex flex-col justify-between py-1">
+          <div className="space-y-2">
+            <div className="h-5 w-3/4 bg-muted rounded animate-pulse" />
+            <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
+          </div>
+          <div className="h-3 w-24 bg-muted rounded animate-pulse" />
         </div>
       </div>
     );
 
-  const cleanDesc = movie.description.replace(/<[^>]*>/g, "").slice(0, 80);
+  const cleanDesc = movie.description.replace(/<[^>]*>/g, "").slice(0, 220);
+
+  const formatRating = (rating: string) => {
+    const num = parseFloat(rating);
+    if (isNaN(num)) return null;
+    const fullStars = Math.floor(num);
+    const hasHalf = num % 1 >= 0.5;
+    return { fullStars, hasHalf, num };
+  };
 
   return (
     <a
       href={movie.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col h-full"
+      className="group flex h-full gap-4"
     >
-      <div className="flex items-center gap-1.5 mb-3">
-        <Film className="w-3.5 h-3.5 text-secondary" />
-        <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/50">
-          Last Watched
-        </span>
+      <div className="relative flex-shrink-0 w-28 sm:w-28 h-full rounded-xl overflow-hidden border border-white/10 bg-muted shadow-xl">
+        {movie.poster ? (
+          <img
+            src={movie.poster}
+            alt={movie.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Film className="w-12 h-12 text-muted-foreground/20" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-lg px-2.5 py-1.5">
+          <Film className="w-4 h-4 text-white" />
+        </div>
       </div>
 
-      <div className="flex items-start gap-3 flex-1">
-        <div className="relative flex-shrink-0 w-10 h-14 rounded-lg overflow-hidden border border-white/10 bg-muted">
-          {movie.poster ? (
-            <img
-              src={movie.poster}
-              alt={movie.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Film className="w-4 h-4 text-muted-foreground/20" />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <p className="font-display text-sm font-semibold text-foreground leading-tight group-hover:text-secondary transition-colors line-clamp-2">
+      <div className="flex flex-col flex-1 min-w-0 justify-between">
+        <div>
+          <span className="inline-block text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/40 mb-1.5">
+            Last Watched
+          </span>
+          <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-secondary transition-colors">
             {movie.title}
           </p>
           {cleanDesc && (
-            <p className="font-body text-[11px] text-muted-foreground/60 mt-1 line-clamp-2 leading-relaxed">
+            <p className="font-body text-sm text-muted-foreground/60 mt-2 line-clamp-4 leading-relaxed">
               {cleanDesc}
-              {cleanDesc.length >= 80 ? "…" : ""}
+              {movie.description.length > 220 ? "…" : ""}
             </p>
           )}
+
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            {movie.year && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted border border-white/10">
+                <Calendar className="w-3 h-3 text-muted-foreground/60" />
+                <span className="text-xs text-muted-foreground/70">{movie.year}</span>
+              </div>
+            )}
+            {movie.rating && formatRating(movie.rating) && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30">
+                <span className="text-xs font-semibold text-yellow-500/90">
+                  {formatRating(movie.rating)?.num.toFixed(1)}
+                </span>
+                <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+              </div>
+            )}
+          </div>
         </div>
 
-        <ExternalLink className="w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-secondary/60 flex-shrink-0 transition-colors mt-0.5" />
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-secondary/70 transition-colors">
+          <span>View on LetterBoxd</span>
+          <ExternalLink className="w-4 h-4" />
+        </div>
       </div>
     </a>
   );
@@ -339,11 +367,14 @@ function MovieCell({ movie }: { movie: Movie | null }) {
 function BookCell({ book }: { book: Book | null }) {
   if (!book)
     return (
-      <div className="flex items-center gap-3 h-full min-h-[90px]">
-        <div className="w-10 h-14 rounded-lg bg-muted animate-pulse flex-shrink-0" />
-        <div className="flex-1 space-y-2">
-          <div className="h-3 w-3/4 bg-muted rounded animate-pulse" />
-          <div className="h-2.5 w-1/2 bg-muted rounded animate-pulse" />
+      <div className="flex h-full gap-4">
+        <div className="w-36 sm:w-40 h-full rounded-xl bg-muted animate-pulse flex-shrink-0" />
+        <div className="flex-1 flex flex-col justify-between py-1">
+          <div className="space-y-2">
+            <div className="h-5 w-3/4 bg-muted rounded animate-pulse" />
+            <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
+          </div>
+          <div className="h-3 w-24 bg-muted rounded animate-pulse" />
         </div>
       </div>
     );
@@ -359,55 +390,61 @@ function BookCell({ book }: { book: Book | null }) {
       href={book.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col h-full"
+      className="group flex h-full gap-4"
     >
-      <div className="flex items-center gap-1.5 mb-3">
-        <BookOpen className="w-3.5 h-3.5 text-accent" />
-        <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/50">
-          Reading Now
-        </span>
-        <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse ml-auto" />
+      <div className="relative flex-shrink-0 w-28 sm:w-28 h-full rounded-xl overflow-hidden border border-white/10 bg-muted shadow-xl">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={book.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <BookOpen className="w-12 h-12 text-muted-foreground/20" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+        <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-lg px-2.5 py-1.5">
+          <BookOpen className="w-4 h-4 text-white" />
+        </div>
       </div>
 
-      <div className="flex items-start gap-3 flex-1">
-        <div className="relative flex-shrink-0 w-10 h-14 rounded-lg overflow-hidden border border-white/10 bg-muted shadow-lg">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={book.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-muted-foreground/20" />
-            </div>
-          )}
-          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-white/20 to-white/5" />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <p className="font-display text-sm font-semibold text-foreground leading-tight group-hover:text-accent transition-colors line-clamp-2">
+      <div className="flex flex-col flex-1 min-w-0 justify-between">
+        <div>
+          <span className="inline-block text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/40 mb-1.5">
+            Currently Reading
+          </span>
+          <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-accent transition-colors">
             {book.title}
           </p>
-          <p className="font-body text-[11px] text-muted-foreground/60 mt-0.5">
+          <p className="font-body text-sm text-muted-foreground/70 mt-1.5">
             {book.author_name}
           </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
           {rating > 0 && (
-            <div className="flex items-center gap-1 mt-1.5">
-              <Star className="w-2.5 h-2.5 fill-yellow-500/60 text-yellow-500/60" />
-              <span className="text-[10px] text-muted-foreground/50">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30">
+              <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+              <span className="text-sm font-semibold text-yellow-500/90">
                 {book.average_rating}
               </span>
-              {book.num_pages && (
-                <span className="text-[10px] text-muted-foreground/30 ml-1">
-                  {book.num_pages}p
-                </span>
-              )}
+            </div>
+          )}
+          {book.num_pages && (
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-muted border border-white/10">
+              <span className="text-sm text-muted-foreground/70">
+                {book.num_pages}p
+              </span>
             </div>
           )}
         </div>
 
-        <ExternalLink className="w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-accent/60 flex-shrink-0 transition-colors mt-0.5" />
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-accent/70 transition-colors">
+          <span>View on Goodreads</span>
+          <ExternalLink className="w-4 h-4" />
+        </div>
       </div>
     </a>
   );
@@ -555,7 +592,7 @@ export default function NowSection() {
 
             {/* Book */}
             <BentoCard
-              className="md:col-span-2 min-h-[140px]"
+              className="md:col-span-2 min-h-[220px]"
               glowColor="hsl(170 70% 50% / 0.12)"
               delay={0.08}
             >
@@ -564,7 +601,7 @@ export default function NowSection() {
 
             {/* Movie */}
             <BentoCard
-              className="md:col-span-2 min-h-[140px]"
+              className="md:col-span-2 min-h-[220px]"
               glowColor="hsl(330 75% 60% / 0.12)"
               delay={0.14}
             >
