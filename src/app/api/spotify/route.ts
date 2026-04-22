@@ -35,17 +35,31 @@ export async function GET() {
     const access_token = await getAccessToken();
 
     const res = await fetch(
-      "https://api.spotify.com/v1/me/top/tracks?limit=1&time_range=short_term",
+      "https://api.spotify.com/v1/me/player/recently-played?limit=1",
       { headers: { Authorization: `Bearer ${access_token}` } }
     );
 
     if (!res.ok) {
-      console.error("Spotify fetch failed:", res.status, await res.text());
+      const errorText = await res.text();
+      console.error("Spotify fetch failed:", res.status, errorText);
+
+      // If premium required, return mock data instead of null
+      if (res.status === 403 && errorText.includes("premium subscription required")) {
+        return NextResponse.json({
+          song: {
+            title: "Portfolio Demo",
+            artist: "Spotify Integration",
+            albumImage: null,
+            url: "#",
+          },
+        });
+      }
+
       return NextResponse.json({ song: null }, { status: res.status });
     }
 
     const data = await res.json();
-    const track = data.items?.[0];
+    const track = data.items?.[0]?.track;
 
     if (!track) return NextResponse.json({ song: null });
 
