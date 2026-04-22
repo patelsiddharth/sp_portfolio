@@ -97,10 +97,10 @@ export function BookCell({ book }: { book: IBook | null }) {
             Currently Reading
           </span>
           <div className="flex justify-between">
-            <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-accent transition-colors">
+            <p className="font-display text-lg sm:text-xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
               {book.title}
             </p>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-accent/70 transition-colors">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 group-hover:text-primary/70 transition-colors">
               <span>View on Goodreads</span>
               <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
             </div>
@@ -119,7 +119,7 @@ export function BookCell({ book }: { book: IBook | null }) {
         <div className="mt-3">
           <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-accent to-purple-400"
+              className="h-full bg-gradient-to-r from-primary to-purple-400"
               initial={{ width: 0 }}
               animate={{ width: `${progress * 100}%` }}
               transition={{ duration: 1 }}

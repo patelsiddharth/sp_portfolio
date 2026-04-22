@@ -111,7 +111,7 @@ export default function NowSection() {
             {/* Book */}
             <BentoCard
               className="md:col-span-2 min-h-[220px]"
-              glowColor="hsl(170 70% 50% / 0.12)"
+              glowColor="hsl(245 80% 67% / 0.15)"
               delay={0.08}
             >
               <BookCell book={book} />
@@ -127,22 +127,22 @@ export default function NowSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* Spotify */}
-            <BentoCard
-              className="md:col-span-2 min-h-[130px]"
-              glowColor="hsl(141 76% 48% / 0.1)"
-              delay={0.26}
-            >
-              <SpotifyCell song={song} />
-            </BentoCard>
-
             {/* Status */}
             <BentoCard
-              className="min-h-[130px]"
+              className="md:col-span-2 min-h-[130px]"
               glowColor="hsl(245 80% 67% / 0.12)"
               delay={0.2}
             >
               <StatusCell />
+            </BentoCard>
+
+            {/* Spotify */}
+            <BentoCard
+              className="md:col-span-1 min-h-[130px]"
+              glowColor="hsl(141 76% 48% / 0.1)"
+              delay={0.26}
+            >
+              <SpotifyCell song={song} />
             </BentoCard>
           </div>
         </div>
