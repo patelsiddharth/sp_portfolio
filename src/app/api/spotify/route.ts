@@ -43,19 +43,15 @@ export async function GET() {
       const errorText = await res.text();
       console.error("Spotify fetch failed:", res.status, errorText);
 
-      // If premium required, return mock data instead of null
-      if (res.status === 403 && errorText.includes("premium subscription required")) {
-        return NextResponse.json({
-          song: {
-            title: "Portfolio Demo",
-            artist: "Spotify Integration",
-            albumImage: null,
-            url: "#",
-          },
-        });
-      }
-
-      return NextResponse.json({ song: null }, { status: res.status });
+      return NextResponse.json({
+        song: {
+          type: "mock",
+          title: "Blinding Lights",
+          artist: "The Weeknd",
+          albumImage: "https://i.scdn.co/image/ab67616d00001e028863bc11d2aa12b54f5aeb36",
+          url: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b?si=5c43051e6750421d&nd=1&dlsi=de4116722fab46c4",
+        },
+      });
     }
 
     const data = await res.json();
