@@ -6,7 +6,7 @@ import {
   Calendar,
   Tags,
 } from "lucide-react";
-import { IMovie } from "../types";
+import { IMovie } from "../../types";
 
 export function MovieCell({ movie }: { movie: IMovie | null }) {
   if (!movie)

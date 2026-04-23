@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { BookOpen, ExternalLink } from "lucide-react";
-import { IBook } from "../types";
+import { IBook } from "../../types";
 
 export function BookCell({ book }: { book: IBook | null }) {
   if (!book)

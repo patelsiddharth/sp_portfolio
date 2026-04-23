@@ -1,14 +1,11 @@
 "use client";
 
-import { Radio } from "lucide-react";
-
 const STATUS = "Weekends went into this portfolio. Finally wrapping it up.";
 
 export function StatusCell() {
   return (
     <div className="flex flex-col h-full justify-between">
       <div className="flex items-center gap-1.5 mb-3">
-        <Radio className="w-3.5 h-3.5 text-primary" />
         <span className="text-[10px] font-mono tracking-[0.15em] uppercase text-muted-foreground/50">
           Current Status
         </span>
