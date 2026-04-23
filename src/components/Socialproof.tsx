@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useInView, useSpring, useTransform } from "framer-motion";
 import {
   Heart, Eye, Send, MessageSquare, User,
-  Loader2, CheckCircle2, Star, ShieldCheck, ChevronDown
+  Loader2, CheckCircle2, ShieldCheck, ChevronDown
 } from "lucide-react";
 import RevealOnScroll from "./RevealOnScroll";
 
@@ -14,21 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-interface Review {
-  id: string;
-  name: string;
-  message: string;
-  mood: string;
-  createdAt: number;
-}
-
-interface Stats {
-  visits: number;
-  likes: number;
-  hasLiked: boolean;
-}
+import { IReview, IStats } from "@/types";
 
 const MOODS = [
   { emoji: "🔥", label: "Fire" },
@@ -46,7 +32,7 @@ const PAGE_SIZE = 5;
 function AnimatedCount({ value }: { value: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
-  
+
   const spring = useSpring(0, { mass: 1, stiffness: 75, damping: 15 });
   const display = useTransform(spring, (current) => Math.round(current).toLocaleString());
 
@@ -106,7 +92,7 @@ function ConfettiBurst({ trigger }: { trigger: boolean }) {
 
 // ─── Review card ──────────────────────────────────────────────────────────────
 
-function ReviewCard({ review, index, isNew }: { review: Review; index: number; isNew?: boolean }) {
+function ReviewCard({ review, index, isNew }: { review: IReview; index: number; isNew?: boolean }) {
   const initials = review.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   const hues = [245, 330, 170, 200, 280, 30];
   const hue = hues[review.name.charCodeAt(0) % hues.length];
@@ -118,22 +104,21 @@ function ReviewCard({ review, index, isNew }: { review: Review; index: number; i
       animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
       transition={{ delay: isNew ? 0 : index * 0.05, duration: 0.4, ease: "easeOut" }}
-      className={`group glass rounded-2xl p-5 border bg-background/40 backdrop-blur-xl transition-all hover:border-white/10 ${
-        isNew ? "border-primary/30" : "border-white/5"
-      }`}
+      className={`group glass rounded-2xl p-5 border bg-background/40 backdrop-blur-xl transition-all hover:border-white/10 ${isNew ? "border-primary/30" : "border-white/5"
+        }`}
     >
       <div className="flex items-start gap-4">
         {/* Avatar utilizing shadcn ui */}
         <div className="relative flex-shrink-0">
           <Avatar className="w-10 h-10 border-none">
-            <AvatarFallback 
-              className="text-xs font-bold text-white" 
+            <AvatarFallback
+              className="text-xs font-bold text-white"
               style={{ background: `hsl(${hue} 70% 55%)` }}
             >
               {initials}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
             {review.mood}
           </div>
@@ -164,8 +149,8 @@ function ReviewCard({ review, index, isNew }: { review: Review; index: number; i
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function SocialProof() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [stats, setStats] = useState<IStats | null>(null);
+  const [reviews, setReviews] = useState<IReview[]>([]);
   const [likeLoading, setLikeLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [formState, setFormState] = useState({ name: "", message: "", mood: "😊" });
@@ -378,11 +363,10 @@ export default function SocialProof() {
                               onClick={() => setFormState((p) => ({ ...p, mood: emoji }))}
                               whileTap={{ scale: 0.9 }}
                               title={label}
-                              className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all border ${
-                                formState.mood === emoji
-                                  ? "border-primary/50 bg-primary/15 scale-110"
-                                  : "border-white/5 bg-white/5 hover:bg-white/10"
-                              }`}
+                              className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all border ${formState.mood === emoji
+                                ? "border-primary/50 bg-primary/15 scale-110"
+                                : "border-white/5 bg-white/5 hover:bg-white/10"
+                                }`}
                             >
                               {emoji}
                             </motion.button>
@@ -521,11 +505,10 @@ export default function SocialProof() {
                         key={emoji}
                         onClick={() => { setActiveFilter(emoji); setVisibleCount(PAGE_SIZE); }}
                         whileTap={{ scale: 0.92 }}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body transition-all border ${
-                          activeFilter === emoji
-                            ? "border-primary/50 bg-primary/15 text-foreground"
-                            : "border-white/5 bg-white/5 text-muted-foreground hover:border-white/10 hover:text-foreground"
-                        }`}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body transition-all border ${activeFilter === emoji
+                          ? "border-primary/50 bg-primary/15 text-foreground"
+                          : "border-white/5 bg-white/5 text-muted-foreground hover:border-white/10 hover:text-foreground"
+                          }`}
                       >
                         <span>{emoji}</span>
                         <span>{label}</span>

@@ -31,3 +31,17 @@ export interface ISong {
   albumImage: string;
   url: string;
 }
+
+export interface IReview {
+  id: string;
+  name: string;
+  message: string;
+  mood: string;
+  createdAt: number;
+}
+
+export interface IStats {
+  visits: number;
+  likes: number;
+  hasLiked: boolean;
+}

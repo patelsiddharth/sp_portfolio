@@ -39,7 +39,7 @@ export function BentoCard({
           background: `radial-gradient(circle at 50% 0%, ${glowColor}, transparent 70%)`,
         }}
       />
-      <div className="relative z-10 p-5 h-full">{children}</div>
+      <div className={`relative z-10 h-full ${delay ? "p-5" : ""}`}>{children}</div>
     </motion.div>
   );
 }
